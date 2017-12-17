@@ -4,9 +4,9 @@ MAINTAINER Søren Mollerup <shm@dbc.dk>
 ARG PORT=7371
 ENV PORT=${PORT}
 
-ADD xp-github/xp-machine-user-ssh  /root/.ssh
+
 RUN apt-get install -y --no-install-recommends git ssh
-RUN ssh-keyscan github.com >> ~/.ssh/known_hosts && \
+RUN ssh-keyscan github.com >> ~/.ssh/known_hosts
 RUN git config --global http.sslVerify false
 RUN pip install git+ssh://git@github.com/DBCDK/cobet.git
 RUN pip install git+https://github.com/DBCDK/pyutils.git
