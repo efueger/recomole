@@ -6,6 +6,7 @@ ENV PORT=${PORT}
 
 
 RUN apt-get install -y --no-install-recommends git ssh
+RUN mkdir ~/.ssh
 RUN ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 RUN git config --global http.sslVerify false
 RUN pip install git+ssh://git@github.com/DBCDK/cobet.git
