@@ -1,0 +1,29 @@
+language: python
+sudo: false
+
+env:
+  - PACKAGE=recomole
+  - CODECLIMATE_REPO_TOKEN=@REPO_TOKEN@
+
+python:
+  - "3.5"
+
+# command to install dependencies
+install:
+  # - pip install -r requirements.txt
+  - pip install git+https://github.com/DBCDK/pytools.git
+  - pip install pytest-cov
+  - pip install codeclimate-test-reporter
+  - pip install Sphinx
+  - pip install -e .
+
+# command to run tests
+script:
+  - pytest --cov=src/$PACKAGE
+  - sphinx-apidoc --force -o docs/source/ src/$PACKAGE `pwd`/src/$PACKAGE/tests/
+  - python setup.py build_sphinx --fresh-env --all-files --build-dir docs/build
+  - make-build-info
+  - python setup.py egg_info --tag-build=".${TRAVIS_BUILD_NUMBER}" bdist_wheel
+
+# after_success:
+#   - codeclimate-test-reporter
