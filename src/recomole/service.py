@@ -27,15 +27,50 @@ from pyutils import Statistics
 from pyutils import Stat
 from pyutils import StatusHandler
 from pyutils import BaseHandler
+from pkg_resources import resource_filename
 
 from mobus import PostgresReader
 from recomole.bibdk_recommender import BibDKRecommender
 from recomole.content_first_recommender import ContentFirstRecommender
+from recomole.post_examples import create_post_examples_from_dir
 
 logger = logging.getLogger(__name__)
 
-STATS = {'bibdk': Statistics(name='bibdk-recommender'),
+STATS = {'loan-cosim': Statistics(name='loan-cosim-recommender'),
          'content-first': Statistics(name='content-first-recommender')}
+
+
+class HelpHandler(BaseHandler):
+    """ Help Handler """
+    def initialize(self, root_name, name):
+        self.name = name
+        self.path = resource_filename('recomole', 'data/html/%s/help.html' % name)
+        example_path = resource_filename('recomole', 'data/examples/%s' % name)
+        self.examples = create_post_examples_from_dir('/%s/%s' % (root_name, name), example_path, suffix='.json', title="Examples")
+
+    def get(self):
+        with open(self.path) as fh:
+            content = fh.read()
+            content = content.replace('@EXAMPLE@', self.examples)
+            self.write(content)
+
+
+class MainHandler(BaseHandler):
+
+    def get(self):
+        self.write('\n'.join(['<html>',
+                              '<h1>Recomole</h1>',
+                              '<h3>endpoints</h3>',
+                              '<ul>',
+                              ' <li><a href="recomole/loan-cosim">loan cosim</a></li>',
+                              ' <li><a href="recomole/content-first">content first</a></li>',
+                              '</ul>',
+                              '<h3>help pages</h3>',
+                              '<ul>',
+                              ' <li><a href="recomole/loan-cosim/help">loan cosim</a></li>',
+                              ' <li><a href="recomole/content-first/help">content first</a></li>',
+                              '</ul>',
+                              '</html>']))
 
 
 class RecommendHandler(BaseHandler):
@@ -119,8 +154,10 @@ def make_app(root, recommenders, ab_id):
                                                                     ab_id=ab_id,
                                                                     info=info,
                                                                     stat_collector=STATS[r.name])) for r in recommenders]
+    handlers += [(r"/%s/loan-cosim/help" % root, HelpHandler, dict(root_name='recomole', name='loan-cosim')),
+                 (r"/%s/content-first/help" % root, HelpHandler, dict(root_name='recomole', name='content-first'))]
     handlers.append((r"/%s/status" % root, StatusHandler, dict(ab_id=1, info=info, statistics=STATS.values())))
-
+    handlers.append((r"/%s" % root, MainHandler))
     return tw.Application(handlers)
 
 

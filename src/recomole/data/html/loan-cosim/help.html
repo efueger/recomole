@@ -1,0 +1,39 @@
+<html>
+  <body>
+
+    <h2>Loan cosimilarity Recommender</h2>
+    
+    Recommender based on user loans.
+
+    <h4>Request</h4>
+
+    The service provides one post method that takes a json structure, with the following keys:
+
+    <ul>
+      <li><b>like</b>: List of pids to base recommendation on</li>
+      <li><b>maxresults</b>: Maximum number of returned results</li>
+      <li><b>creatormax</b>: Maximum number works by a single creator</li>
+
+    </ul> 
+
+   <h4>Response</h4>
+   
+   Each <i>response</i> item consists of a recommended pid and some additional info.
+   The info object consists of the following keys:
+
+   <ul>
+     <li><b>pid</b>: pid in recommended work with highest loancount</li>
+     <li><b>work</b>: Recommmended work</li>
+     <li><b>val</b>: Similarity value</li>
+     <li><b>creator</b>: Creator of recommended work</li>
+     <li><b>title</b>: Title of recommended work</li>
+     <li><b>loancount</b>: Number of loans of recommended pid</li>
+     <li><b>from</b>: recommendations based in this item</li>
+   </ul>
+    
+   The <i>responseHeader</i> consists of the received arguments (for debug purposes), the responsetime in milliseconds and warnings if appropriate.</br></br>
+   <hr>
+   @EXAMPLE@
+   </br></br></br></br>
+  </body>
+</html>

@@ -167,7 +167,7 @@ class BibDKRecommender():
     Recommender based on loans
     """
     def __init__(self, lowell_db, reader):
-        self.name = 'bibdk'
+        self.name = 'loan-cosim'
         self.specification = BibDKSpecification()
         self.lowell_db = lowell_db
         self.mapper = LowellDBMapper(self.lowell_db)
