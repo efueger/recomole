@@ -13,6 +13,9 @@ Recommender service.
 The service has the following endpoints:
 
 """
+from datetime import datetime
+import json
+from jsonschema.exceptions import ValidationError
 import logging
 import os
 import socket
@@ -21,14 +24,90 @@ import tornado.ioloop as ti
 from pyutils import JSONFormatter
 from pyutils import build_info
 from pyutils import Statistics
+from pyutils import Stat
 from pyutils import StatusHandler
-from cobet import RecommendHandler
+from pyutils import BaseHandler
+
 from mobus import PostgresReader
 from recomole.bibdk_recommender import BibDKRecommender
 
 logger = logging.getLogger(__name__)
 
 STATS = {'bibdk': Statistics(name='bibdk-recommender')}
+
+
+class RecommendHandler(BaseHandler):
+    """
+    RecommendHandler
+
+    Generic recommendhandler designed to recieve requests via post and
+    return recommendations
+    """
+    def initialize(self, recommender, specification, ab_id, info, stat_collector):
+        """
+        Initializes handler
+
+        :param recommender:
+             Recommender (should inherit from cobet.recommender_base.RecommenderBase)
+        :param specification:
+             openAPI specifiktaion for service
+        :param ab_id:
+             ab-id to display in status
+        :param info:
+             information about build
+        :param stat_collector:
+             Collector used to collect service traffic
+        """
+        self.recommender = recommender
+        self.ab_id = ab_id
+        self.specification = specification
+        self.info = info
+        self.stat_collector = stat_collector
+        self.static_header_content = {'build': self.info['build_number'],
+                                      'git': self.info['git'],
+                                      'version': self.info['version'],
+                                      'ab-id': self.ab_id,
+                                      'recommender': self.recommender.name}
+
+    def post(self):
+        """ Creates and returns recommendations """
+        with Stat(self.stat_collector):
+            self.__post()
+
+    def __post(self):
+        self.set_header("Content-Type", 'application/json; charset="utf-8"')
+        start = datetime.now()
+        request = self.__get_request()
+        logger.debug("raw request %s", request)
+        recommendations, extra = self.recommender(**request)
+        self.write(json.dumps(self.__make_response(extra['timings'], recommendations, start)))
+
+    def __make_response(self, timings, recommendations, start):
+        response = {'responseHeader': self.__make_header(timings, len(recommendations)),
+                    'response': recommendations}
+        response['responseHeader']['time'] = int(((datetime.now() - start).total_seconds()) * 1000)
+        return response
+
+    def __make_header(self, timings, num_found):
+        timings = {k: v for k, v in timings.items() if v}
+        header = dict(self.static_header_content)
+        header['numFound'] = num_found
+        if timings:
+            header['timings'] = timings
+        return header
+
+    def __get_request(self):
+        body = self.request.body.decode(encoding='UTF-8')
+        logger.debug('{request: %s, body: %s}' % (self.request, body))
+        body = json.loads(body)
+        self.__validate_request(body)
+        return body
+
+    def __validate_request(self, content):
+        try:
+            self.specification.validate(content)
+        except ValidationError as err:
+            raise tw.HTTPError(status_code=400, log_message=str(err))
 
 
 def make_app(root, recommenders, ab_id):
