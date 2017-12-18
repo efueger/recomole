@@ -30,10 +30,12 @@ from pyutils import BaseHandler
 
 from mobus import PostgresReader
 from recomole.bibdk_recommender import BibDKRecommender
+from recomole.content_first_recommender import ContentFirstRecommender
 
 logger = logging.getLogger(__name__)
 
-STATS = {'bibdk': Statistics(name='bibdk-recommender')}
+STATS = {'bibdk': Statistics(name='bibdk-recommender'),
+         'content-first': Statistics(name='content-first-recommender')}
 
 
 class RecommendHandler(BaseHandler):
@@ -127,8 +129,8 @@ def main(port, ab_id):
     root = 'recomole'
     db_urls = get_db_urls({'lowell': 'LOWELL_URL', 'recmod': 'RECMOD_URL'})
 
-    recommenders = [BibDKRecommender(db_urls['lowell'],
-                                     PostgresReader(db_urls['recmod'], 'cosim_model'))]
+    recommenders = [BibDKRecommender(db_urls['lowell'], PostgresReader(db_urls['recmod'], 'cosim_model')),
+                    ContentFirstRecommender(PostgresReader(db_urls['recmod'], 'content_first_model'))]
     app = make_app(root, recommenders, ab_id)
     logger.info("service up at 'http://%s:%s/%s'" % (socket.gethostname(), port, root))
     app.listen(port)
@@ -192,9 +194,3 @@ def cli():
     setup_logger(structured_formatter, level, logfile_name=args.logfile)
 
     main(args.port, args.ab_id)
-
-
-if __name__ == "__main__":
-
-    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
-    main(7371, 1)

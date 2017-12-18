@@ -140,7 +140,6 @@ class LowellDBMapper():
         return map_
 
     def __check_pids_are_in_works(self, pids, works):
-
         for pid in pids:
             if pid not in works:
                 logger.warning("Could not find work for pid '%s'", pid)
