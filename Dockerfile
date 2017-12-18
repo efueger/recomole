@@ -5,12 +5,12 @@ ARG PORT=7371
 ENV PORT=${PORT}
 
 
-RUN apt-get install -y --no-install-recommends git
-RUN git config --global http.sslVerify false
-RUN pip install git+https://github.com/DBCDK/pyutils.git
-RUN pip install git+https://github.com/DBCDK/mobus.git
-RUN pip install git+https://github.com/DBCDK/recomole.git
-RUN apt-get remove -y git && \
+RUN apt-get install -y --no-install-recommends git &&\
+    git config --global http.sslVerify false &&\
+    pip install git+https://github.com/DBCDK/pyutils.git &&\
+    pip install git+https://github.com/DBCDK/mobus.git &&\
+    pip install git+https://github.com/DBCDK/recomole.git &&\
+    apt-get remove -y git && \
     apt-get autoremove -y
 CMD recomole --verbose --ab-id 1 --port ${PORT}
 

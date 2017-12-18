@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # -*- mode: python -*-
+import glob
 from setuptools import setup, find_packages
 
 ## See the following pages for keywords possibilities for setup keywords, etc.
@@ -13,6 +14,7 @@ setup(name='recomole',
       package_dir={'': 'src'},
       packages=find_packages(where='src'),
       description='recommender service',
+      scripts=glob.glob('src/bin/*'),
       test_suite='recomole.tests',
       install_requires=['tornado'],
       provides=['recomole'],
