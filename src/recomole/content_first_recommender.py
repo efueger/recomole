@@ -77,11 +77,10 @@ class ContentFirstRecommender():
     """
     Recommender based on loans
     """
-    def __init__(self, lowell_db, reader):
+    def __init__(self, reader):
         self.name = 'content-first'
         self.specification = ContentFirstSpecification()
         self.reader = reader
-        self.lowell_db = lowell_db
 
     def __call__(self, **kwargs):
         return self.recommend(**kwargs)
