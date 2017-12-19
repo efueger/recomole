@@ -1,0 +1,51 @@
+{
+    "id": "/prod/search/recomole-service",
+    "cmd": null,
+    "cpus": 0.3,
+    "mem": 128,
+    "disk": 128,
+    "instances": 3,
+    "container": {
+	"docker": {
+	    "image": "docker.dbc.dk/dbc-recomole:${VERSION}",
+	    "network": "BRIDGE",
+	    "portMappings": [
+		{
+		    "containerPort": 7371,
+		    "protocol": "tcp",
+		    "name": null,
+		    "hostPort": 0
+		}
+	    ]
+	},
+	"type": "DOCKER"
+    },
+    "user": "mesos-default",
+    "constraints": [
+	["net", "CLUSTER", "prod"],
+	["hostname", "UNIQUE"]
+    ],
+    "healthChecks": [
+	{
+	    "protocol": "HTTP",
+	    "path": "/recomole/status",
+	    "portIndex": 0,
+	    "gracePeriodSeconds": 30,
+	    "intervalSeconds": 20,
+	    "timeoutSeconds": 20,
+	    "maxConsecutiveFailures": 3
+	}
+    ],
+    "upgradeStrategy": {
+	"minimumHealthCapacity": 1.0,
+	"maximumOverCapacity": 0.1
+    },
+    "labels": {
+        "external.port.0": "recomole.mcp1-proxy.dbc.dk"	
+    },
+    "env": {
+        "PORT": "7371",
+        "LOWELL_URL": "${LOWELL_DB_URL}",
+        "RECMOD_URL": "${RECMOD_DB_URL}"
+    }
+}

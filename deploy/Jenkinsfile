@@ -1,0 +1,52 @@
+#! groovy
+
+pipeline {
+    agent { label "devel8" }
+    parameters {
+	string(name: 'DOCKER_IMAGE_VERSION',
+	       defaultValue: '',
+	       description: 'The version of the dockerimage to deploy')
+    }
+    stages {
+	stage("setup environment") {
+	    steps {
+		sh """
+                   virtualenv -p /usr/bin/python3 env
+                   . env/bin/activate
+                   pip install git+https://github.com/DBCDK/mesos-tools.git
+                   """
+	    }
+	}
+	stage("build marathon file") {
+	    steps {
+		withCredentials([string(credentialsId: 'lowell_db_connection_string', variable: 'LOWELL_DB_URL'),
+				 string(credentialsId: 'recommender_models_db_connection_string', variable: 'RECMOD_DB_URL')]) {
+		    sh """
+                       . env/bin/activate
+                       cd deploy
+                       marathon-config-producer . single marathon.json.template -o marathon.json --template-keys VERSION=${params.DOCKER_IMAGE_VERSION} LOWELL_DB_URL=$LOWELL_DB_URL RECMOD_DB_URL=$RECMOD_DB_URL
+                       """
+		}
+	    }
+	}
+	stage("deploy to marathon (prod)") {
+	    steps {
+		withCredentials([string(credentialsId: 'search_marathon_token_prod', variable: 'TOKEN')]) {
+		    sh """
+                       . env/bin/activate
+                       cd deploy
+                       marathon-deployer -b https://mcp1.dbc.dk:8443 -a $TOKEN deploy marathon.json
+                       """
+		}
+	    }
+	}
+    }
+    post {
+	unstable {
+	    notifyOfBuildStatus("build became unstable")
+	}
+	failure {
+	    notifyOfBuildStatus("build failed")
+	}
+    }
+}
