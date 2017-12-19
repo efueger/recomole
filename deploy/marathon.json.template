@@ -43,5 +43,8 @@
     "labels": {
         "external.port.0": "recomole.mcp1-proxy.dbc.dk"	
     },
-    "env": {}
+    "env": {
+        "LOWELL_URL": "${LOWELL_DB_URL}",
+        "RECMOD_URL": "${RECMOD_DB_URL}"
+    }
 }

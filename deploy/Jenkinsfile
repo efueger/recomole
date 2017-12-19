@@ -19,11 +19,14 @@ pipeline {
 	}
 	stage("build marathon file") {
 	    steps {
-		sh """
-                   . env/bin/activate
-                   cd deploy
-                   marathon-config-producer . single marathon.json.template -o marathon.json --template-keys VERSION=${params.DOCKER_IMAGE_VERSION}
-                   """
+		withCredentials([string(credentialsId: 'lowell_db_connection_string', variable: 'LOWELL_DB_URL'),
+				 string(credentialsId: 'recommender_models_db_connection_string', variable: 'RECMOD_DB_URL')]) {
+		    sh """
+                       . env/bin/activate
+                       cd deploy
+                       marathon-config-producer . single marathon.json.template -o marathon.json --template-keys VERSION=${params.DOCKER_IMAGE_VERSION} LOWELL_DB_URL=$LOWELL_DB_URL RECMOD_DB_URL=$RECMOD_DB_URL
+                       """
+		}
 	    }
 	}
 	stage("deploy to marathon (prod)") {
