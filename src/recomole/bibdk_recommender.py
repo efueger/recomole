@@ -19,7 +19,7 @@ example of usage:
     reader = PostgresReader(os.environ['RECMOD_URL'], 'cosim_model')
     br = BibDKRecommender(lowell_db, reader)
 
-    recs, t = br(like=["870970-basis:23266431", "foo"], maxresult=5, creatormax=2)
+    recs, t = br(like=["870970-basis:23266431", "foo"], maxresults=5, creatormax=2)
     for r in recs:
         print(r)
 """
@@ -66,7 +66,7 @@ class BibDKSpecification():
         """
         Validates request
         """
-        allowed_keys = {'like': list, 'dislike': list, 'maxresult': int, 'creatormax': int}
+        allowed_keys = {'like': list, 'dislike': list, 'maxresults': int, 'creatormax': int}
         mandatory_keys = ['like']
 
         for key, value in request.items():
@@ -181,8 +181,8 @@ class BibDKRecommender():
         logger.debug("%s called with %s", self.name, kwargs)
         timings = {}
         workids = self.mapper.pids2works(kwargs['like'])
-        maxresult = self.__maxresult(kwargs)
-        num_cand = maxresult * 5
+        maxresults = self.__maxresults(kwargs)
+        num_cand = maxresults * 5
         recommendations, work2origin = self.__fetch(workids, num_cand)
         missing = num_cand - len(recommendations)
         if missing:
@@ -197,11 +197,19 @@ class BibDKRecommender():
             timings['flood'] = flood_timing.total_seconds() * 1000
 
         work2pid = self.mapper.work2pid_loancount([r.work for r in recommendations])
-        recommendations = self.__augment(recommendations[:maxresult], work2pid, work2meta, work2origin)
+        recommendations = self.__augment(recommendations[:maxresults], work2pid, work2meta, work2origin)
 
         timings['total'] = (datetime.datetime.now() - start).total_seconds() * 1000
         logger.debug("Returning result %s, %s", recommendations, {'timings': timings})
-        return recommendations, {'timings': timings}
+        return self.rename_keys(recommendations, {'title': 'debug-title', 'creator': 'debug-creator'}), {'timings': timings}
+
+    def rename_keys(self, recommendations, keys):
+        for rec in recommendations:
+            for name, newname in keys.items():
+                if name in rec:
+                    rec[newname] = rec[name]
+                    del rec[name]
+        return recommendations
 
     def __augment(self, recommendations, work2pid, work2meta, work2origin):
         augmented_recommendations = []
@@ -230,7 +238,7 @@ class BibDKRecommender():
         return sorted([Recommendation(k, v) for k, v in worksums.items()], key=lambda x: x[1])[-limit:][::-1], from_map
 
     @staticmethod
-    def __maxresult(kwargs, default=10):
-        if 'maxresult' in kwargs:
-            return kwargs['maxresult']
+    def __maxresults(kwargs, default=10):
+        if 'maxresults' in kwargs:
+            return kwargs['maxresults']
         return default
