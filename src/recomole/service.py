@@ -27,12 +27,12 @@ from pyutils import Statistics
 from pyutils import Stat
 from pyutils import StatusHandler
 from pyutils import BaseHandler
+from pyutils import create_post_examples_from_dir
 from pkg_resources import resource_filename
 
 from mobus import PostgresReader
 from recomole.bibdk_recommender import BibDKRecommender
 from recomole.content_first_recommender import ContentFirstRecommender
-from recomole.post_examples import create_post_examples_from_dir
 
 logger = logging.getLogger(__name__)
 
