@@ -161,6 +161,8 @@ def flood_filter(recommendations, work2meta, creatormax):
 
     return filtered_recs, datetime.datetime.now() - start
 
+def to_milli(delta):
+    return delta.total_seconds() * 1000
 
 class BibDKRecommender():
     """
@@ -180,10 +182,11 @@ class BibDKRecommender():
         start = datetime.datetime.now()
         logger.debug("%s called with %s", self.name, kwargs)
         timings = {}
-        workids = self.mapper.pids2works(kwargs['like'])
+
+        workids, timings['workids'] = self.__workids(kwargs['like'])
         maxresults = self.__maxresults(kwargs)
         num_cand = maxresults * 5
-        recommendations, work2origin = self.__fetch(workids, num_cand)
+        recommendations, work2origin, timings['fetch'], timings['from-analysis'] = self.__fetch(workids, num_cand)
         missing = num_cand - len(recommendations)
         if missing:
             pops = self.__fetch_pop(missing)
@@ -191,17 +194,32 @@ class BibDKRecommender():
                 work2origin[w].append('popular')
             recommendations += pops
 
-        work2meta = self.mapper.works2meta([r.work for r in recommendations])
+        work2meta, timings['work2meta'] = self.__work2meta([r.work for r in recommendations])
         if 'creatormax' in kwargs:
             recommendations, flood_timing = flood_filter(recommendations, work2meta, kwargs['creatormax'])
-            timings['flood'] = flood_timing.total_seconds() * 1000
+            timings['flood'] = to_milli(flood_timing)
 
-        work2pid = self.mapper.work2pid_loancount([r.work for r in recommendations])
-        recommendations = self.__augment(recommendations[:maxresults], work2pid, work2meta, work2origin)
+        work2pid, timings['work2pid'] = self.__work2pid([r.work for r in recommendations])
+        recommendations, timings['augment'] = self.__augment(recommendations[:maxresults], work2pid, work2meta, work2origin)
 
-        timings['total'] = (datetime.datetime.now() - start).total_seconds() * 1000
+        timings['total'] = to_milli(datetime.datetime.now() - start)
         logger.debug("Returning result %s, %s", recommendations, {'timings': timings})
         return self.rename_keys(recommendations, {'title': 'debug-title', 'creator': 'debug-creator'}), {'timings': timings}
+
+    def __workids(self, likes):
+        start = datetime.datetime.now()
+        workids = self.mapper.pids2works(likes)
+        return workids, to_milli(datetime.datetime.now() - start)
+
+    def __work2meta(self, works):
+        start = datetime.datetime.now()
+        work2meta = self.mapper.works2meta(works)
+        return work2meta, to_milli(datetime.datetime.now() - start)
+
+    def __work2pid(self, works):
+        start = datetime.datetime.now()
+        work2pid = self.mapper.work2pid_loancount(works)
+        return work2pid, to_milli(datetime.datetime.now() - start)
 
     def rename_keys(self, recommendations, keys):
         for rec in recommendations:
@@ -212,6 +230,7 @@ class BibDKRecommender():
         return recommendations
 
     def __augment(self, recommendations, work2pid, work2meta, work2origin):
+        start = datetime.datetime.now()
         augmented_recommendations = []
         for workid, value in recommendations:
             if workid in work2pid:
@@ -219,13 +238,17 @@ class BibDKRecommender():
                 entry.update(work2pid[workid])
                 entry.update(work2meta[workid])
                 augmented_recommendations.append(entry)
-        return augmented_recommendations
+        return augmented_recommendations, to_milli(datetime.datetime.now() - start)
 
     def __fetch_pop(self, limit):
         return [Recommendation(w.decode("utf-8"), v) for w, v in self.reader["POPULAR"][:limit]]
 
     def __fetch(self, workids, limit):
+        start = datetime.datetime.now()
         result = self.reader.find(*workids)
+        find_time = to_milli(datetime.datetime.now() - start)
+        
+        start = datetime.datetime.now()
         worksums = defaultdict(list)
         from_map = defaultdict(list)
         for pid, recs in result:
@@ -235,7 +258,8 @@ class BibDKRecommender():
                 from_map[rec].append(pid)
 
         worksums = {k: sum(v) / len(v) for k, v in worksums.items()}
-        return sorted([Recommendation(k, v) for k, v in worksums.items()], key=lambda x: x[1])[-limit:][::-1], from_map
+        recommendations = sorted([Recommendation(k, v) for k, v in worksums.items()], key=lambda x: x[1])[-limit:][::-1]
+        return recommendations, from_map, find_time, to_milli(datetime.datetime.now() - start)
 
     @staticmethod
     def __maxresults(kwargs, default=10):
