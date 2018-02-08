@@ -34,15 +34,15 @@ pipeline {
                     substituteInFile('REPLACE_VERSION', params.DOCKER_IMAGE_VERSION, 'staging')
                     substituteInFile('REPLACE_EXTERNAL_LABEL', 'staging.recomole.mcp1-proxy.dbc.dk', 'staging')
                     substituteInFile('REPLACE_NUM_INSTANCES', 1, 'staging')
-                    substituteInFile('REPLACE_LOWELL_DB_URL', $LOWELL_DB_URL, 'staging')
-                    substituteInFile('REPLACE_RECMOD_DB_URL', $RECMOD_DB_URL, 'staging')
+                    substituteInFile('REPLACE_LOWELL_DB_URL', LOWELL_DB_URL, 'staging')
+                    substituteInFile('REPLACE_RECMOD_DB_URL', RECMOD_DB_URL, 'staging')
 
 		    substituteInFile('REPLACE_APPLICATION_DOMAIN', 'staging', 'prod')
                     substituteInFile('REPLACE_VERSION', params.DOCKER_IMAGE_VERSION, 'prod')
                     substituteInFile('REPLACE_EXTERNAL_LABEL', 'recomole.mcp1-proxy.dbc.dk', 'prod')
                     substituteInFile('REPLACE_NUM_INSTANCES', 3, 'prod')
-                    substituteInFile('REPLACE_LOWELL_DB_URL', $LOWELL_DB_URL, 'prod')
-                    substituteInFile('REPLACE_RECMOD_DB_URL', $RECMOD_DB_URL, 'prod')
+                    substituteInFile('REPLACE_LOWELL_DB_URL', LOWELL_DB_URL, 'prod')
+                    substituteInFile('REPLACE_RECMOD_DB_URL', RECMOD_DB_URL, 'prod')
 		}
 	    }
 	}
