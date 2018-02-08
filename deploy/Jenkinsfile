@@ -104,6 +104,6 @@ def substituteInFile(key, value, type) {
     println("Substituting: [$key] -> [$value] in '$type'")
     sh """#!/bin/bash -l
           cd deploy
-          sed -i -- 's/${key}/${value}/g' marathon-${type}.json
+          sed -i -- 's#${key}#${value}#g' marathon-${type}.json
        """
 }
