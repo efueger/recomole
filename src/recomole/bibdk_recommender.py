@@ -247,7 +247,7 @@ class BibDKRecommender():
         start = datetime.datetime.now()
         result = self.reader.find(*workids)
         find_time = to_milli(datetime.datetime.now() - start)
-        
+
         start = datetime.datetime.now()
         worksums = defaultdict(list)
         from_map = defaultdict(list)
