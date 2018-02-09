@@ -195,7 +195,7 @@ class BibDKRecommender():
             recommendations += pops
 
         work2meta, timings['work2meta'] = self.__work2meta([r.work for r in recommendations])
-        if 'creatormax' in kwargs:
+        if 'creatormax' in kwargs and maxresults > kwargs['creatormax']:
             recommendations, flood_timing = flood_filter(recommendations, work2meta, kwargs['creatormax'])
             timings['flood'] = to_milli(flood_timing)
 
