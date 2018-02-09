@@ -17,16 +17,20 @@ import pandas as pd
 import json
 import sys
 
-if __name__ == "__main__":
+def main(quiet):
     timings = []
+    total = None
     for line in sys.stdin:
-        sys.stdout.write(line)
-        sys.stdout.flush()
+        if not quiet:
+            sys.stdout.write(line)
+            sys.stdout.flush()
         try:
             resp = json.loads(line)
             t = {'time': resp['time']}
             if 'responseHeader' in resp['value']:
                 t.update(resp['value']['responseHeader']['timings'])
+            if resp['value'] == 'total runtime':
+                total = resp['time']
         except Exception as exp:
             print(exp, line)
         timings.append(t)
@@ -34,8 +38,13 @@ if __name__ == "__main__":
     pd.set_option('display.width', 1000)
     df = timings.describe(percentiles=[.25, .5, .75, .95])
     count = int(df.loc['count'][0])
-    print("=" * 120)
-    print("Count", count)
+    if not quiet:
+        print("=" * 120)
+    print("-" * 40)
+    print("Count:".ljust(30) + str(count).rjust(5))
+    print("Total Runtime:".ljust(30) + ("%d ms" % total).rjust(8))
+    print("Averga Runtime:".ljust(30) + ("%.1f ms" % (total/count)).rjust(10))
+    print("-" * 40)
     df = df.drop(['count'])
     print(df)
 
@@ -54,3 +63,17 @@ if __name__ == "__main__":
     #     f.suptitle("Ortograf bench (count=%d)" % count, fontsize=14)
     #     splots[i].set_title(colnames[i])
     #     pl.savefig('plot.png')
+
+
+def cli():
+    import argparse
+
+    parser = argparse.ArgumentParser(description='analyzes ortograf benchmark output')
+
+    parser.add_argument('-q', '--quiet', dest='quiet', action='store_true', help='do not print responses')
+
+    args = parser.parse_args()
+    main(args.quiet)
+
+if __name__ == "__main__":
+    cli()
