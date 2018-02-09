@@ -1,5 +1,5 @@
 {
-    "id": "/REPLACE_APPLICATION_DOMAIN/search/recomole-service",
+    "id": "/REPLACE_APPLICATION_DOMAIN/microsearch/recomole-service",
     "cmd": null,
     "cpus": 0.3,
     "mem": 128,
