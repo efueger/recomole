@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+1#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # -*- mode: python -*-
 """
@@ -96,7 +96,7 @@ class LowellDBMapper():
         """
         works = {}
         with Cursor(self.lowell_db) as cur:
-            cur.execute("SELECT pid,workid FROM pid_workid WHERE pid in %(pids)s", {'pids': tuple(pids)})
+            cur.execute("SELECT pid,workid FROM relations WHERE pid in %(pids)s", {'pids': tuple(pids)})
             for row in cur:
                 works[row['pid']] = row['workid']
 
@@ -130,11 +130,11 @@ class LowellDBMapper():
         """
         map_ = {}
         with Cursor(self.lowell_db) as cur:
-            cur.execute("""SELECT DISTINCT ON (pid_workid.workid) pid_workid.pid, pid_workid.workid, pid_loancount.loancount
+            cur.execute("""SELECT DISTINCT ON (relations.workid) relations.pid, relations.workid, pid_loancount.loancount
                            FROM pid_loancount
-                           INNER JOIN pid_workid ON pid_loancount.pid = pid_workid.pid
-                           WHERE pid_workid.workid IN %(workids)s
-                           ORDER BY pid_workid.workid, pid_loancount.loancount DESC""", {'workids': tuple(workids)})
+                           INNER JOIN relations ON pid_loancount.pid = relations.pid
+                           WHERE relations.workid IN %(workids)s
+                           ORDER BY relations.workid, pid_loancount.loancount DESC""", {'workids': tuple(workids)})
             for row in cur:
                 map_[row['workid']] = {'pid': row['pid'], 'loancount': row['loancount']}
         return map_
@@ -161,8 +161,10 @@ def flood_filter(recommendations, work2meta, creatormax):
 
     return filtered_recs, datetime.datetime.now() - start
 
+
 def to_milli(delta):
     return delta.total_seconds() * 1000
+
 
 class BibDKRecommender():
     """
