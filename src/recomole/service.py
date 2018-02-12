@@ -31,7 +31,7 @@ from pyutils import create_post_examples_from_dir
 from pkg_resources import resource_filename
 
 from mobus import PostgresReader
-from recomole.bibdk_recommender import BibDKRecommender
+from recomole.loans_recommender import LoansRecommender
 
 logger = logging.getLogger(__name__)
 
@@ -163,7 +163,7 @@ def main(port, ab_id):
     root = 'recomole'
     db_urls = get_db_urls({'lowell': 'LOWELL_URL', 'recmod': 'RECMOD_URL'})
 
-    recommenders = [BibDKRecommender(db_urls['lowell'], PostgresReader(db_urls['recmod'], 'cosim_model'))]
+    recommenders = [LoansRecommender(db_urls['lowell'], PostgresReader(db_urls['recmod'], 'cosim_model'))]
     app = make_app(root, recommenders, ab_id)
     logger.info("service up at 'http://%s:%s/%s'" % (socket.gethostname(), port, root))
     app.listen(port)
