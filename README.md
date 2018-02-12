@@ -29,5 +29,5 @@ The info object consists of the following keys:
 The service provides three endpoints:
 
 * **loan-cosim** The recommender endpoint
-* **status** service status
-* **help** description and example client
+* **loan-cosim/status** service status
+* **loan-cosim/help** description and example client
