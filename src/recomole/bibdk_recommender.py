@@ -187,12 +187,6 @@ class BibDKRecommender():
         maxresults = self.__maxresults(kwargs)
         num_cand = maxresults * 5
         recommendations, work2origin, timings['fetch'], timings['from-analysis'] = self.__fetch(workids, num_cand)
-        missing = num_cand - len(recommendations)
-        if missing:
-            pops = self.__fetch_pop(missing)
-            for w, _ in pops:
-                work2origin[w].append('popular')
-            recommendations += pops
 
         work2meta, timings['work2meta'] = self.__work2meta([r.work for r in recommendations])
         if 'creatormax' in kwargs:
@@ -240,14 +234,11 @@ class BibDKRecommender():
                 augmented_recommendations.append(entry)
         return augmented_recommendations, to_milli(datetime.datetime.now() - start)
 
-    def __fetch_pop(self, limit):
-        return [Recommendation(w.decode("utf-8"), v) for w, v in self.reader["POPULAR"][:limit]]
-
     def __fetch(self, workids, limit):
         start = datetime.datetime.now()
         result = self.reader.find(*workids)
         find_time = to_milli(datetime.datetime.now() - start)
-        
+
         start = datetime.datetime.now()
         worksums = defaultdict(list)
         from_map = defaultdict(list)
