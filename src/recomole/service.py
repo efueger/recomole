@@ -35,8 +35,7 @@ from recomole.loans_recommender import LoansRecommender
 
 logger = logging.getLogger(__name__)
 
-STATS = {'loan-cosim': Statistics(name='loan-cosim-recommender'),
-         'content-first': Statistics(name='content-first-recommender')}
+STATS = {'loan-cosim': Statistics(name='loan-cosim-recommender')}
 
 
 class HelpHandler(BaseHandler):
@@ -151,8 +150,7 @@ def make_app(root, recommenders, ab_id):
                                                                     ab_id=ab_id,
                                                                     info=info,
                                                                     stat_collector=STATS[r.name])) for r in recommenders]
-    handlers += [(r"/%s/loan-cosim/help" % root, HelpHandler, dict(root_name='recomole', name='loan-cosim')),
-                 (r"/%s/content-first/help" % root, HelpHandler, dict(root_name='recomole', name='content-first'))]
+    handlers += [(r"/%s/loan-cosim/help" % root, HelpHandler, dict(root_name='recomole', name='loan-cosim'))]
     handlers.append((r"/%s/status" % root, StatusHandler, dict(ab_id=1, info=info, statistics=STATS.values())))
     handlers.append((r"/%s" % root, MainHandler))
     return tw.Application(handlers)
