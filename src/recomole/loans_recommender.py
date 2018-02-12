@@ -166,6 +166,10 @@ def to_milli(delta):
     return delta.total_seconds() * 1000
 
 
+class RecommenderError(Exception):
+    pass
+
+
 class LoansRecommender():
     """
     Recommender based on loans
@@ -186,6 +190,8 @@ class LoansRecommender():
         timings = {}
 
         workids, timings['workids'] = self.__workids(kwargs['like'])
+        if not workids:
+            die("Could not find any works for pids %s" % kwargs['like'], exception=RecommenderError)
         maxresults = self.__maxresults(kwargs)
         num_cand = maxresults * 5
         recommendations, work2origin, timings['fetch'], timings['from-analysis'] = self.__fetch(workids, num_cand)
