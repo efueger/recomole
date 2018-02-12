@@ -7,6 +7,7 @@ node('xp-build-i01') {
         buildEnv()
         runInEnv('python --version')
         runInEnv('bench http://recomole.mcp1-proxy.dbc.dk/recomole/loan-cosim benchmark-test/request-examples/recomole-requests-10.json -r 1000 -m post | src/bin/analyze_loan_cosim_bench_run.py -q')
+        archiveArtifacts artifacts: '*.txt', fingerprint: true
     }
 }
 

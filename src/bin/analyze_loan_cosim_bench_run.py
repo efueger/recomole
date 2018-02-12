@@ -17,6 +17,7 @@ import pandas as pd
 import json
 import sys
 
+
 def main(quiet):
     timings = []
     total = None
@@ -40,29 +41,16 @@ def main(quiet):
     count = int(df.loc['count'][0])
     if not quiet:
         print("=" * 120)
-    print("-" * 40)
-    print("Count:".ljust(30) + str(count).rjust(5))
-    print("Total Runtime:".ljust(30) + ("%d ms" % total).rjust(8))
-    print("Averga Runtime:".ljust(30) + ("%.1f ms" % (total/count)).rjust(10))
-    print("-" * 40)
+    result = ["-" * 40,
+              "Count:".ljust(30) + str(count).rjust(5),
+              "Total Runtime:".ljust(30) + ("%d ms" % total).rjust(8),
+              "Average Runtime:".ljust(30) + ("%.1f ms" % (total/count)).rjust(10),
+              "-" * 40]
     df = df.drop(['count'])
-    print(df)
-
-    # colnames = list(df.columns.values)
-    # rownames = list(df.index.values)
-
-    # f, splots = pl.subplots(len(df.columns), 1, figsize=(8, 6), sharex=True)
-    # for i in range(len(df.columns)):
-    #     name = colnames[i]
-    #     values = np.array(df.ix[:, i].tolist())
-    #     sortorder = values.argsort().argsort()
-    #     pal = sns.color_palette("Greens_d", len(sortorder))
-    #     rank = values.argsort()
-    #     sns.barplot(x=rownames, y=values, palette=np.array(pal[::-1])[rank], ax=splots[i])
-    #     splots[i].set_ylabel("milliseconds")
-    #     f.suptitle("Ortograf bench (count=%d)" % count, fontsize=14)
-    #     splots[i].set_title(colnames[i])
-    #     pl.savefig('plot.png')
+    result.append(repr(df))
+    result = "\n".join(result)
+    with open('bench.txt', 'w') as fh:
+        fh.write(result + '\n')
 
 
 def cli():
