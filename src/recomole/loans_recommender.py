@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 # -*- mode: python -*-
 """
-:mod:`recomole.bibdk_recommender` -- bibdk recommender
+:mod:`recomole.loans_recommender` -- loans recommender
 
 =================
-Bibdk Recommender
+Loans Recommender
 =================
 
 Recommender based on loans
@@ -17,7 +17,7 @@ example of usage:
 
     lowell_db = os.environ['LOWELL_URL']
     reader = PostgresReader(os.environ['RECMOD_URL'], 'cosim_model')
-    br = BibDKRecommender(lowell_db, reader)
+    br = LoansRecommender(lowell_db, reader)
 
     recs, t = br(like=["870970-basis:23266431", "foo"], maxresults=5, creatormax=2)
     for r in recs:
@@ -58,9 +58,9 @@ class Cursor():
         self.conn.close()
 
 
-class BibDKSpecification():
+class LoansSpecification():
     """
-    Specifies acceptected arguments from the bibdk recommender
+    Specifies acceptected arguments from the loans recommender
     """
     def validate(self, request):
         """
@@ -96,7 +96,7 @@ class LowellDBMapper():
         """
         works = {}
         with Cursor(self.lowell_db) as cur:
-            cur.execute("SELECT pid,workid FROM pid_workid WHERE pid in %(pids)s", {'pids': tuple(pids)})
+            cur.execute("SELECT pid,workid FROM relations WHERE pid in %(pids)s", {'pids': tuple(pids)})
             for row in cur:
                 works[row['pid']] = row['workid']
 
@@ -130,11 +130,11 @@ class LowellDBMapper():
         """
         map_ = {}
         with Cursor(self.lowell_db) as cur:
-            cur.execute("""SELECT DISTINCT ON (pid_workid.workid) pid_workid.pid, pid_workid.workid, pid_loancount.loancount
+            cur.execute("""SELECT DISTINCT ON (relations.workid) relations.pid, relations.workid, pid_loancount.loancount
                            FROM pid_loancount
-                           INNER JOIN pid_workid ON pid_loancount.pid = pid_workid.pid
-                           WHERE pid_workid.workid IN %(workids)s
-                           ORDER BY pid_workid.workid, pid_loancount.loancount DESC""", {'workids': tuple(workids)})
+                           INNER JOIN relations ON pid_loancount.pid = relations.pid
+                           WHERE relations.workid IN %(workids)s
+                           ORDER BY relations.workid, pid_loancount.loancount DESC""", {'workids': tuple(workids)})
             for row in cur:
                 map_[row['workid']] = {'pid': row['pid'], 'loancount': row['loancount']}
         return map_
@@ -161,16 +161,18 @@ def flood_filter(recommendations, work2meta, creatormax):
 
     return filtered_recs, datetime.datetime.now() - start
 
+
 def to_milli(delta):
     return delta.total_seconds() * 1000
 
-class BibDKRecommender():
+
+class LoansRecommender():
     """
     Recommender based on loans
     """
     def __init__(self, lowell_db, reader):
         self.name = 'loan-cosim'
-        self.specification = BibDKSpecification()
+        self.specification = LoansSpecification()
         self.lowell_db = lowell_db
         self.mapper = LowellDBMapper(self.lowell_db)
         self.reader = reader
