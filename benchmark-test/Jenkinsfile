@@ -1,0 +1,33 @@
+#!groovy
+
+node('xp-build-i01') {
+    def app
+    checkout scm
+    stage('run'){
+        buildEnv()
+        runInEnv('python --version')
+        runInEnv('bench http://recomole.mcp1-proxy.dbc.dk/recomole/loan-cosim benchmark-test/request-examples/recomole-requests-10.json -r 1000 -m post | src/bin/analyze_loan_cosim_bench_run.py -q')
+    }
+}
+
+
+
+def buildEnv() {
+    println('Building virtual environment')
+    sh '''#!/bin/bash -l
+       source activate python3.5
+       virtualenv venv -p `which python` --system-site-packages
+       . venv/bin/activate
+       pip install git+https://github.com/DBCDK/pyutils.git
+       pip install git+https://github.com/DBCDK/pytools.git
+       '''
+}
+
+def runInEnv(command) {
+    println("Running command: $command")
+    sh """#!/bin/bash -l
+       source activate python3.5
+       . venv/bin/activate
+       ${command}
+       """
+}
