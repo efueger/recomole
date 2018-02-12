@@ -32,7 +32,6 @@ from pkg_resources import resource_filename
 
 from mobus import PostgresReader
 from recomole.bibdk_recommender import BibDKRecommender
-from recomole.content_first_recommender import ContentFirstRecommender
 
 logger = logging.getLogger(__name__)
 
@@ -63,12 +62,10 @@ class MainHandler(BaseHandler):
                               '<h3>endpoints</h3>',
                               '<ul>',
                               ' <li><a href="recomole/loan-cosim">loan cosim</a></li>',
-                              ' <li><a href="recomole/content-first">content first</a></li>',
                               '</ul>',
                               '<h3>help pages</h3>',
                               '<ul>',
                               ' <li><a href="recomole/loan-cosim/help">loan cosim</a></li>',
-                              ' <li><a href="recomole/content-first/help">content first</a></li>',
                               '</ul>',
                               '</html>']))
 
@@ -166,8 +163,7 @@ def main(port, ab_id):
     root = 'recomole'
     db_urls = get_db_urls({'lowell': 'LOWELL_URL', 'recmod': 'RECMOD_URL'})
 
-    recommenders = [BibDKRecommender(db_urls['lowell'], PostgresReader(db_urls['recmod'], 'cosim_model')),
-                    ContentFirstRecommender(PostgresReader(db_urls['recmod'], 'content_first_model'))]
+    recommenders = [BibDKRecommender(db_urls['lowell'], PostgresReader(db_urls['recmod'], 'cosim_model'))]
     app = make_app(root, recommenders, ab_id)
     logger.info("service up at 'http://%s:%s/%s'" % (socket.gethostname(), port, root))
     app.listen(port)
