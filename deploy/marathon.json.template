@@ -1,13 +1,13 @@
 {
-    "id": "/prod/search/recomole-service",
+    "id": "/REPLACE_APPLICATION_DOMAIN/microsearch/recomole-service",
     "cmd": null,
     "cpus": 0.3,
     "mem": 128,
     "disk": 128,
-    "instances": 3,
+    "instances": REPLACE_NUM_INSTANCES,
     "container": {
 	"docker": {
-	    "image": "docker.dbc.dk/dbc-recomole:${VERSION}",
+	    "image": "docker.dbc.dk/dbc-recomole:REPLACE_VERSION",
 	    "network": "BRIDGE",
 	    "portMappings": [
 		{
@@ -41,11 +41,11 @@
 	"maximumOverCapacity": 0.1
     },
     "labels": {
-        "external.port.0": "recomole.mcp1-proxy.dbc.dk"	
+        "external.port.0": "REPLACE_EXTERNAL_LABEL"	
     },
     "env": {
         "PORT": "7371",
-        "LOWELL_URL": "${LOWELL_DB_URL}",
-        "RECMOD_URL": "${RECMOD_DB_URL}"
+        "LOWELL_URL": "REPLACE_LOWELL_DB_URL",
+        "RECMOD_URL": "REPLACE_RECMOD_DB_URL"
     }
 }
