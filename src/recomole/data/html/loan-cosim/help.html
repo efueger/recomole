@@ -11,11 +11,26 @@
 
     <ul>
       <li><b>like</b>: List of pids to base recommendation on</li>
+      <li><b>dislike</b>: List of pids to base recommendation on (not used at the moment)</li>
       <li><b>maxresult</b>: Maximum number of returned results</li>
-      <li><b>creatormax</b>: Maximum number works by a single creator</li>
-
+      <li><b>filters</b>: object containing filters to apply to recommendations</li>
+      <li><b>boosters</b>: object containing boosters to apply to recommendations (not implemented yet)</li>
     </ul> 
 
+    <h4>Filters</h4>
+    Filters are used to filter unwanted recommendations from the result.
+
+    Supported filters:
+    <ul>
+      <li><b>authorFlood</b>: The maximum number of recommendations from a single author in the result</li>
+      <li><b>subject</b>: List of subjects. Only materials with one of these subjects are returned</li>
+      <li><b>matType</b>: List of material types. Only materials with one of these subjects are returned</li>
+      <li><b>language</b>: List of languages. Only materials with one of these subjects are returned</li>
+      </ul>
+    
+    <h4>Boosters</h4>
+    Boost recommendations and change the ranking of resultset (not implemented yet).
+    
    <h4>Response</h4>
    
    Each <i>response</i> item consists of a recommended pid and some additional info.
