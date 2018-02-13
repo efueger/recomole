@@ -50,7 +50,7 @@ class LoansSpecification():
         """
         Validates request
         """
-        allowed_keys = {'like': list, 'dislike': list, 'maxresults': int, 'ignore': list, 'filters': dict, 'boosters': dict}
+        allowed_keys = {'like': list, 'dislike': list, 'ignore': list, 'filters': dict, 'boosters': dict, 'start': int, 'rows': int}
         self.__validate(request, allowed_keys, 'key')
 
         mandatory_keys = ['like']
@@ -113,13 +113,17 @@ class LoansRecommender():
     def recommend(self, **kwargs):
         start = datetime.datetime.now()
         logger.debug("%s called with %s", self.name, kwargs)
+
+        kwargs = self.__page_info(kwargs)
         timings = {}
 
         pid2work, timings['workids'] = self.__workids(kwargs['like'])
+
         workids = list(pid2work.values())
         if not workids:
             die("Could not find any works for pids %s" % kwargs['like'], exception=RecommenderError)
-        maxresults = self.__maxresults(kwargs)
+
+        maxresults = kwargs['start'] + kwargs['rows']
         num_cand = maxresults * 5
         recommendations, work2origin, timings['fetch'], timings['from-analysis'] = self.__fetch(workids, pid2work, num_cand)
 
@@ -136,11 +140,20 @@ class LoansRecommender():
             ignore_workids = list(ignore_map.values())
 
             recommendations = [r for r in recommendations if r.work not in ignore_workids]
-        recommendations, timings['augment'] = self.__augment(recommendations[:maxresults], work2pid, work2meta, work2origin)
+        recommendations, timings['augment'] = self.__augment(recommendations[kwargs['start']:maxresults], work2pid, work2meta, work2origin)
 
         timings['total'] = to_milli(datetime.datetime.now() - start)
         logger.debug("Returning result %s, %s", recommendations, {'timings': timings})
         return self.rename_keys(recommendations, {'title': 'debug-title', 'creator': 'debug-creator'}), {'timings': timings}
+
+    @staticmethod
+    def __page_info(kwargs, start=0, rows=10):
+        """ add paging info to kwargs if not present"""
+        if 'start' not in kwargs:
+            kwargs['start'] = start
+        if 'rows' not in kwargs:
+            kwargs['rows'] = rows
+        return kwargs
 
     def __workids(self, likes):
         start = datetime.datetime.now()
@@ -193,9 +206,3 @@ class LoansRecommender():
         worksums = {k: sum(v) / len(v) for k, v in worksums.items()}
         recommendations = sorted([Recommendation(k, v) for k, v in worksums.items()], key=lambda x: x[1])[-limit:][::-1]
         return recommendations, from_map, find_time, to_milli(datetime.datetime.now() - start)
-
-    @staticmethod
-    def __maxresults(kwargs, default=10):
-        if 'maxresults' in kwargs:
-            return kwargs['maxresults']
-        return default
