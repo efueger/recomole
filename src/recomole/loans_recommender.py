@@ -115,12 +115,13 @@ class LoansRecommender():
         logger.debug("%s called with %s", self.name, kwargs)
         timings = {}
 
-        workids, timings['workids'] = self.__workids(kwargs['like'])
+        pid2work, timings['workids'] = self.__workids(kwargs['like'])
+        workids = list(pid2work.values())
         if not workids:
             die("Could not find any works for pids %s" % kwargs['like'], exception=RecommenderError)
         maxresults = self.__maxresults(kwargs)
         num_cand = maxresults * 5
-        recommendations, work2origin, timings['fetch'], timings['from-analysis'] = self.__fetch(workids, num_cand)
+        recommendations, work2origin, timings['fetch'], timings['from-analysis'] = self.__fetch(workids, pid2work, num_cand)
 
         work2meta, timings['work2meta'] = self.__work2meta([r.work for r in recommendations])
 
@@ -131,7 +132,9 @@ class LoansRecommender():
         work2pid, timings['work2pid'] = self.__work2pid([r.work for r in recommendations])
 
         if 'ignore' in kwargs:
-            ignore_workids, timings['ignore-work2pid'] = self.__workids(kwargs['ignore'])
+            ignore_map, timings['ignore-work2pid'] = self.__workids(kwargs['ignore'])
+            ignore_workids = list(ignore_map.values())
+
             recommendations = [r for r in recommendations if r.work not in ignore_workids]
         recommendations, timings['augment'] = self.__augment(recommendations[:maxresults], work2pid, work2meta, work2origin)
 
@@ -167,13 +170,14 @@ class LoansRecommender():
         augmented_recommendations = []
         for workid, value in recommendations:
             if workid in work2pid:
-                entry = {'work': workid, 'val': value, 'from': work2origin[workid]}
+                entry = {'debug-work': workid, 'val': value, 'from': work2origin[workid]}
                 entry.update(work2pid[workid])
                 entry.update(work2meta[workid])
                 augmented_recommendations.append(entry)
         return augmented_recommendations, to_milli(datetime.datetime.now() - start)
 
-    def __fetch(self, workids, limit):
+    def __fetch(self, workids, pid2work, limit):
+        work2pid = {w: p for p, w in pid2work.items()}
         start = datetime.datetime.now()
         result = self.reader.find(*workids)
         find_time = to_milli(datetime.datetime.now() - start)
@@ -181,12 +185,11 @@ class LoansRecommender():
         start = datetime.datetime.now()
         worksums = defaultdict(list)
         from_map = defaultdict(list)
-        for pid, recs in result:
+        for work, recs in result:
             for rec, value in recs[1:]:
                 rec = rec.decode("utf-8")
                 worksums[rec].append(value)
-                from_map[rec].append(pid)
-
+                from_map[rec].append(work2pid[work])
         worksums = {k: sum(v) / len(v) for k, v in worksums.items()}
         recommendations = sorted([Recommendation(k, v) for k, v in worksums.items()], key=lambda x: x[1])[-limit:][::-1]
         return recommendations, from_map, find_time, to_milli(datetime.datetime.now() - start)

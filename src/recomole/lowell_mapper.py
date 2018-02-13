@@ -60,7 +60,7 @@ class LowellDBMapper():
                 works[row['pid']] = row['workid']
 
         self.__check_pids_are_in_works(pids, works)
-        return list(works.values())
+        return works
 
     def works2meta(self, workids):
         """
