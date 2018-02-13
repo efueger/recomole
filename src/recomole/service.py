@@ -121,10 +121,10 @@ class RecommendHandler(BaseHandler):
         response['responseHeader']['time'] = int(((datetime.now() - start).total_seconds()) * 1000)
         return response
 
-    def __make_header(self, timings, num_found):
+    def __make_header(self, timings, num_returned):
         timings = {k: v for k, v in timings.items() if v}
         header = dict(self.static_header_content)
-        header['numFound'] = num_found
+        header['numReturned'] = num_returned
         if timings:
             header['timings'] = timings
         return header
