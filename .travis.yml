@@ -9,7 +9,7 @@ addons:
   postgresql: "9.4"
 
 before_script:
-  - ls
+  - echo `ls`
   - psql -a -d travis -f src/recomole/tests/data/cosim_model.sql
   - psql -a -d travis -f src/recomole/tests/data/metadata.sql
   - psql -a -d travis -f src/recomole/tests/data/relations.sql
