@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/DBCDK/recomole.svg?branch=master)](https://travis-ci.org/DBCDK/recomole)
+[![Maintainability](https://api.codeclimate.com/v1/badges/04ad2e6e98561fafb864/maintainability)](https://codeclimate.com/github/DBCDK/recomole/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/04ad2e6e98561fafb864/test_coverage)](https://codeclimate.com/github/DBCDK/recomole/test_coverage)
+
 # recomole #
 
 recommender service based on loans
