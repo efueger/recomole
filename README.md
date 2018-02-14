@@ -74,7 +74,7 @@ The info object consists of the following keys:
 * **loancount**: Number of loans of recommended pid
 * **from**: recommendations based in this item
     
-   The *responseHeader* consists timings and other forms of metadata..</br></br>
+The *responseHeader* consists timings and other forms of metadata..</br></br>
 
 ### Endpoints
 
