@@ -19,10 +19,10 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: relations_test; Type: TABLE; Schema: public; Owner: lowell
+-- Name: relations; Type: TABLE; Schema: public; Owner: lowell
 --
 
-CREATE TABLE relations_test (
+CREATE TABLE relations (
     pid text NOT NULL,
     workid text NOT NULL,
     unitid text NOT NULL,
@@ -31,13 +31,13 @@ CREATE TABLE relations_test (
 );
 
 
-ALTER TABLE relations_test OWNER TO lowell;
+ALTER TABLE relations OWNER TO lowell;
 
 --
--- Data for Name: relations_test; Type: TABLE DATA; Schema: public; Owner: lowell
+-- Data for Name: relations; Type: TABLE DATA; Schema: public; Owner: lowell
 --
 
-COPY relations_test (pid, workid, unitid, modified, deleted) FROM stdin;
+COPY relations (pid, workid, unitid, modified, deleted) FROM stdin;
 870970-basis:23481561	work:4813157	unit:885811	2016-09-21 00:30:54.945	f
 870970-basis:28685610	work:4813157	unit:1164913	2017-06-19 08:19:08.095	f
 870970-basis:29401691	work:1000042	unit:1206132	2017-12-19 19:14:19.097	f
@@ -52,32 +52,32 @@ COPY relations_test (pid, workid, unitid, modified, deleted) FROM stdin;
 
 
 --
--- Name: relations_test relations_test_pkey; Type: CONSTRAINT; Schema: public; Owner: lowell
+-- Name: relations relations_pkey; Type: CONSTRAINT; Schema: public; Owner: lowell
 --
 
-ALTER TABLE ONLY relations_test
-    ADD CONSTRAINT relations_test_pkey PRIMARY KEY (pid);
-
-
---
--- Name: relations_test_modified_index; Type: INDEX; Schema: public; Owner: lowell
---
-
-CREATE INDEX relations_test_modified_index ON relations_test USING btree (modified);
+ALTER TABLE ONLY relations
+    ADD CONSTRAINT relations_pkey PRIMARY KEY (pid);
 
 
 --
--- Name: relations_test_unitid_index; Type: INDEX; Schema: public; Owner: lowell
+-- Name: relations_modified_index; Type: INDEX; Schema: public; Owner: lowell
 --
 
-CREATE INDEX relations_test_unitid_index ON relations_test USING btree (unitid);
+CREATE INDEX relations_modified_index ON relations USING btree (modified);
 
 
 --
--- Name: relations_test_workid_index; Type: INDEX; Schema: public; Owner: lowell
+-- Name: relations_unitid_index; Type: INDEX; Schema: public; Owner: lowell
 --
 
-CREATE INDEX relations_test_workid_index ON relations_test USING btree (workid);
+CREATE INDEX relations_unitid_index ON relations USING btree (unitid);
+
+
+--
+-- Name: relations_workid_index; Type: INDEX; Schema: public; Owner: lowell
+--
+
+CREATE INDEX relations_workid_index ON relations USING btree (workid);
 
 
 --

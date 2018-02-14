@@ -19,10 +19,10 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: cosim_model_test; Type: TABLE; Schema: public; Owner: recommender-models
+-- Name: cosim_model; Type: TABLE; Schema: public; Owner: recommender-models
 --
 
-CREATE TABLE cosim_model_test (
+CREATE TABLE cosim_model (
     label text NOT NULL,
     keys bytea,
     vals bytea,
@@ -31,13 +31,13 @@ CREATE TABLE cosim_model_test (
 );
 
 
-ALTER TABLE cosim_model_test OWNER TO "recommender-models";
+ALTER TABLE cosim_model OWNER TO "recommender-models";
 
 --
--- Data for Name: cosim_model_test; Type: TABLE DATA; Schema: public; Owner: recommender-models
+-- Data for Name: cosim_model; Type: TABLE DATA; Schema: public; Owner: recommender-models
 --
 
-COPY cosim_model_test (label, keys, vals, keys_dtype, vals_dtype) FROM stdin;
+COPY cosim_model (label, keys, vals, keys_dtype, vals_dtype) FROM stdin;
 work:1000042	\\x776f726b3a31303030303432776f726b3a34383133313537	\\xc90000000000f03f2164daf8ee98643f	|S12	float64
 work:4813157	\\x776f726b3a34383133313537776f726b3a31303030303432	\\xdfffffffffffef3f2164daf8ee98643f	|S12	float64
 work:12601817	\\x776f726b3a3132363031383137776f726b3a3132363031383432	\\x010000000000f03f3f2c0c70bd20da3f	|S13	float64
@@ -48,11 +48,11 @@ POPULAR	\\x776f726b3a3135383734363800776f726b3a3936323038330000776f726b3a3130313
 
 
 --
--- Name: cosim_model_test cosim_model_test_pkey; Type: CONSTRAINT; Schema: public; Owner: recommender-models
+-- Name: cosim_model cosim_model_pkey; Type: CONSTRAINT; Schema: public; Owner: recommender-models
 --
 
-ALTER TABLE ONLY cosim_model_test
-    ADD CONSTRAINT cosim_model_test_pkey PRIMARY KEY (label);
+ALTER TABLE ONLY cosim_model
+    ADD CONSTRAINT cosim_model_pkey PRIMARY KEY (label);
 
 
 --
