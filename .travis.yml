@@ -5,6 +5,9 @@ env:
   - PACKAGE=recomole
   - CODECLIMATE_REPO_TOKEN=0945da156c9515dca52f7aa16b744154e0fd0965b606a89e27ed29caed55a75e
 
+services:
+  - postgresql
+  
 python:
   - "3.5"
 
