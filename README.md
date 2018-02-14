@@ -1,16 +1,68 @@
-# recomole
+# recomole #
 
 recommender service based on loans
 This. recommender is is a cosimilarity model based on loans
 
-### Requests
+## Requests
 The service provides one post method that takes a json structure, with the following keys:
 
 * **like**: List of pids to base recommendation on
-* **maxresult**: Maximum number of returned results
-* **creatormax**: Maximum number works by a single creator
+* **dislike**: List of pids to base recommendation on (not used at the moment)
+* **start**: Paging. first row to return (defaults to 0)
+* **rows**: Paging. Number of rows to return
+* **ignore**: List of pids to ignore (the work they belong to will not be returned in recommendation list)
+* **filters**: object containing filters to apply to recommendations
+* **boosters**: object containing boosters to apply to recommendations (not implemented yet)
 
-### response
+### Filters
+Filters are used to filter unwanted recommendations from the result.
+
+Supported filters:
+
+* **authorFlood**: The maximum number of recommendations from a single author in the result
+* **subject**: List of subjects. Only materials with one of these subjects are returned
+* **matType**: List of material types. Only materials with one of these subjects are returned
+* **language**: List of languages. Only materials with one of these subjects are returned
+
+### Boosters
+Boost recommendations and change the ranking of resultset (not implemented yet).
+
+### examples
+
+simple example:
+```json
+{"like":["870970-basis:28511663"]}
+```
+
+paging example:
+```json
+{"like":["870970-basis:28511663"],
+ "rows": 4,
+ "start": 2}
+```
+
+ignore example:
+```json
+{"like": ["870970-basis:28511663"],
+ "ignore": ["870970-basis:27925715"]}
+```
+ 
+AuthorFlood example:
+```json
+{"like":["870970-basis:28511663"],
+ "maxresults": 2,
+ "filters": {"authorFlood": 2}}
+```
+
+mutiple filters example:
+```json
+{"like":["870970-basis:28511663"],
+ "maxresults": 2,
+ "filters": {"authorFlood": 2,
+             "language": ["dan", "eng"]}}
+```
+
+## response
 Each *response* item consists of a recommended pid and some additional info.
 The info object consists of the following keys:
 
@@ -22,7 +74,7 @@ The info object consists of the following keys:
 * **loancount**: Number of loans of recommended pid
 * **from**: recommendations based in this item
     
-   The *responseHeader* consists timings and other forms of metadata..</br></br>
+The *responseHeader* consists timings and other forms of metadata..</br></br>
 
 ### Endpoints
 
