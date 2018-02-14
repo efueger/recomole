@@ -9,10 +9,10 @@ addons:
   postgresql: "9.4"
 
 before_script:
-  - psql -a -d testbase -f src/recomole/tests/data/cosim_model.sql
-  - psql -a -d testbase -f src/recomole/tests/data/metadata.sql
-  - psql -a -d testbase -f src/recomole/tests/data/relations.sql
-  - psql -a -d testbase -f src/recomole/tests/data/workid_meta.sql
+  - psql -a -d travis -f src/recomole/tests/data/cosim_model.sql
+  - psql -a -d travis -f src/recomole/tests/data/metadata.sql
+  - psql -a -d travis -f src/recomole/tests/data/relations.sql
+  - psql -a -d travis -f src/recomole/tests/data/workid_meta.sql
 
 python:
   - "3.5"
