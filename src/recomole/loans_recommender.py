@@ -153,11 +153,13 @@ class LoansRecommender():
         return kwargs, kwargs['start'] + kwargs['rows']
 
     def __workids(self, likes):
+        """ Fetch workif for pids in likes"""
         start = datetime.datetime.now()
         workids = self.mapper.pids2works(likes)
         return workids, to_milli(datetime.datetime.now() - start)
 
     def __work2meta(self, works):
+        """ fetch metadata for works """
         start = datetime.datetime.now()
         work2meta = self.mapper.works2meta(works)
         return work2meta, to_milli(datetime.datetime.now() - start)
@@ -168,6 +170,7 @@ class LoansRecommender():
         return work2pid, to_milli(datetime.datetime.now() - start)
 
     def rename_keys(self, recommendations, keys):
+        """ rename keynames in recommendations """
         for rec in recommendations:
             for name, newname in keys.items():
                 if name in rec:
@@ -176,6 +179,7 @@ class LoansRecommender():
         return recommendations
 
     def __augment(self, recommendations, work2pid, work2meta, work2origin):
+        """ augment recommendation entries with data from work2pid, work2meta and work2origin"""
         start = datetime.datetime.now()
         augmented_recommendations = []
         for workid, value in recommendations:
@@ -187,6 +191,7 @@ class LoansRecommender():
         return augmented_recommendations, to_milli(datetime.datetime.now() - start)
 
     def __fetch(self, workids, pid2work, limit):
+        """ fetch recommendations for the provided workids """
         work2pid = {w: p for p, w in pid2work.items()}
         start = datetime.datetime.now()
         result = self.reader.find(*workids)
