@@ -89,11 +89,10 @@ class TestFilterCreator(unittest.TestCase):
         expected = {'870970-basis:29401691',
                     '870970-basis:23481561'}
 
-        arguments = {'like': ['870970-basis:29401691', '870970-basis:52932319', '870970-basis:52932858'], 'start': 2, 'rows': 2}
+        arguments = {'like': ['870970-basis:28634560'], 'start': 2, 'rows': 2}
         recommendations, timings = self.recommender(**arguments)
         print("\n RECS ", make_pid_set(recommendations))
         self.assertEqual(expected, make_pid_set(recommendations))
-
 
 # {'870970-basis:52932858', '870970-basis:23481561'}
 # {'870970-basis:52932858'}
