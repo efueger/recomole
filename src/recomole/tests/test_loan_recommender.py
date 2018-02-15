@@ -15,6 +15,7 @@ TRAVIS = True if 'TRAVIS' in os.environ else False
 class TestFilterCreator(unittest.TestCase):
 
     def setUp(self):
+        self.maxDiff = None
         url = 'postgresql://lowell:test@localhost/testing_db'
         reader = PostgresReader(url, 'cosim_model')
         self.recommender = LoansRecommender(url, reader)
@@ -52,9 +53,17 @@ class TestFilterCreator(unittest.TestCase):
             self.recommender(** arguments)
 
     def test_ignores_unknown_pid_among_known_pids(self):
+        expected = [{'from': ['870970-basis:52932858'],
+                     'debug-work': 'work:12601817',
+                     'debug-creator': '',
+                     'loancount': 6,
+                     'pid': '870970-basis:52932319',
+                     'debug-title': 'Just sing it!',
+                     'val': 0.4082482904638631}]
+    
         arguments = {'like': ['unknown:pid', '870970-basis:52932858']}
         recommendations, timings = self.recommender(**arguments)
-        print(recommendations)
+        self.assertEqual(expected, recommendations)
 
     def test_ignore_does_not_return_ignored_pid(self):
         expected = [{'from': ['870970-basis:52932319'],
