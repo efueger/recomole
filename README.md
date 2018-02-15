@@ -14,7 +14,7 @@ The service provides one post method that takes a json structure, with the follo
 * **dislike**: List of pids to base recommendation on (not used at the moment)
 * **start**: Paging. first row to return (defaults to 0)
 * **rows**: Paging. Number of rows to return
-* **ignore**: List of pids to ignore (the work they belong to will not be returned in recommendation list)
+* **ignore**: List of pids to ignore (pids from the work they belong to will not be returned in recommendation list)
 * **filters**: object containing filters to apply to recommendations
 * **boosters**: object containing boosters to apply to recommendations (not implemented yet)
 
@@ -71,7 +71,7 @@ Each *response* item consists of a recommended pid and some additional info.
 The info object consists of the following keys:
 
 * **pid**: pid in recommended work with highest loancount
-* **work**: Recommmended work
+* **debug-work**: Recommmended work (should only be used for debugging)
 * **val**: Similarity value
 * **debug-creator**: Creator of recommended work (should only be used for debugging)
 * **debug-title**: Title of recommended work (should only be used for debugging)
