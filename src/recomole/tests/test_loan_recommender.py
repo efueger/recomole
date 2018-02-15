@@ -5,7 +5,7 @@ import os
 import unittest
 
 from mobus import PostgresReader
-from recomole.loans_recommender import LoansRecommender
+from recomole.loans_recommender import LoansRecommender, RecommenderError
 
 
 TRAVIS = True if 'TRAVIS' in os.environ else False
@@ -43,5 +43,36 @@ class TestFilterCreator(unittest.TestCase):
                      'debug-work': 'work:4813157'}]
 
         arguments = {'like': ['870970-basis:29401691', '870970-basis:52932319', '870970-basis:52932858']}
+        recommendations, timings = self.recommender(**arguments)
+        self.assertEqual(expected, recommendations)
+
+    def test_raises_if_only_unknown_pids_are_given(self):
+        with self.assertRaises(RecommenderError):
+            arguments = {'like': ['unknown:pid']}
+            self.recommender(** arguments)
+
+    def test_ignores_unknown_pid_among_known_pids(self):
+        arguments = {'like': ['unknown:pid', '870970-basis:52932858']}
+        recommendations, timings = self.recommender(**arguments)
+        print(recommendations)
+
+    def test_ignore_does_not_return_ignored_pid(self):
+        expected = [{'from': ['870970-basis:52932319'],
+                     'debug-creator': 'Jakob Høgsbro',
+                     'loancount': 1,
+                     'val': 0.4082482904638631,
+                     'debug-title': 'Runeskrift',
+                     'pid': '870970-basis:52932858',
+                     'debug-work': 'work:12601842'},
+                    {'from': ['870970-basis:52932858'],
+                     'debug-creator': '',
+                     'loancount': 6,
+                     'val': 0.4082482904638631,
+                     'debug-title': 'Just sing it!',
+                     'pid': '870970-basis:52932319',
+                     'debug-work': 'work:12601817'}]
+
+        arguments = {'like': ['870970-basis:29401691', '870970-basis:52932319', '870970-basis:52932858'],
+                     'ignore': ['870970-basis:29401691']}
         recommendations, timings = self.recommender(**arguments)
         self.assertEqual(expected, recommendations)
