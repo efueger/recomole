@@ -86,24 +86,15 @@ class TestFilterCreator(unittest.TestCase):
 
     def test_paging_start_and_rows(self):
         expected = {'870970-basis:51268172', '870970-basis:28075480'}
-
         arguments = {'like': ['870970-basis:28634560'], 'start': 2, 'rows': 2}
         recommendations, timings = self.recommender(**arguments)
         self.assertEqual(expected, make_pid_set(recommendations))
 
     def test_AuthorFlood_filter(self):
         expected = {'870970-basis:27925715',
-                    '870970-basis:29705119',
-                    '870970-basis:28075480',
-                    '870970-basis:51268172',
                     '870970-basis:29401691',
-                    '870970-basis:23481561'}
-
+                    '870970-basis:23481561',
+                    '870970-basis:29705119'}
         arguments = {'like': ['870970-basis:28634560'], 'filters': {'authorFlood': 2}}
         recommendations, timings = self.recommender(**arguments)
-        print("\n RECS ", recommendations)
-        # self.assertEqual(expected, make_pid_set(recommendations))
-
-
-
-# {'870970-basis:27925715', '870970-basis:29401691', '870970-basis:23481561', '870970-basis:29705119'}
+        self.assertEqual(expected, make_pid_set(recommendations))
