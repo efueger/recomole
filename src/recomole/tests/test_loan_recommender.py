@@ -22,8 +22,8 @@ class TestFilterCreator(unittest.TestCase):
 
     def test_test(self):
         print("travis", TRAVIS)
-
-        actual = self.recommender({'like': ['870970-basis:29401691','870970-basis:29440670']})
+        arguments = {'like': ['870970-basis:29401691','870970-basis:29440670']}
+        actual = self.recommender(**arguments)
         print(actual)
         # conn = connect(self.url)
         # cur = conn.cursor()
