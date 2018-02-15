@@ -82,6 +82,6 @@ class TestFilterCreator(unittest.TestCase):
                      'debug-work': 'work:12601817'}]
 
         arguments = {'like': ['870970-basis:29401691', '870970-basis:52932319', '870970-basis:52932858'],
-                     'ignore': ['870970-basis:29401691']}
+                     'ignore': ['870970-basis:23481561']}
         recommendations, timings = self.recommender(**arguments)
         self.assertEqual(expected, recommendations)
