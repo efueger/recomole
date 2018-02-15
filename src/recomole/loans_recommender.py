@@ -71,7 +71,7 @@ class LoansSpecification():
                 die("type mismatch: %s '%s' should be of type %s" % (name, key, allowed_keys[key]), SpecificationError)
 
 
-def flood_filter(recommendations, work2meta, creatormax):
+def author_flood_filter(recommendations, work2meta, creatormax):
     """
     Author flood filter
     """
@@ -112,34 +112,32 @@ class LoansRecommender():
 
     def recommend(self, **kwargs):
         start = datetime.datetime.now()
+        timings = {}
         logger.debug("%s called with %s", self.name, kwargs)
 
-        kwargs = self.__page_info(kwargs)
-        timings = {}
+        kwargs, maxresults = self.__paging(kwargs)
 
         pid2work, timings['workids'] = self.__workids(kwargs['like'])
-
         workids = list(pid2work.values())
         if not workids:
             die("Could not find any works for pids %s" % kwargs['like'], exception=RecommenderError)
 
-        maxresults = kwargs['start'] + kwargs['rows']
         num_cand = maxresults * 5
         recommendations, work2origin, timings['fetch'], timings['from-analysis'] = self.__fetch(workids, pid2work, num_cand)
 
         work2meta, timings['work2meta'] = self.__work2meta([r.work for r in recommendations])
 
-        if 'creatormax' in kwargs and maxresults > kwargs['creatormax']:
-            recommendations, flood_timing = flood_filter(recommendations, work2meta, kwargs['creatormax'])
+        if 'filters' in kwargs and 'authorFlood' in kwargs['filters'] and kwargs['filters']['authorFlood'] < maxresults:
+            logger.debug("applying floodfilter")
+            recommendations, flood_timing = author_flood_filter(recommendations, work2meta, kwargs['filters']['authorFlood'])
             timings['flood'] = to_milli(flood_timing)
-
-        work2pid, timings['work2pid'] = self.__work2pid([r.work for r in recommendations])
 
         if 'ignore' in kwargs:
             ignore_map, timings['ignore-work2pid'] = self.__workids(kwargs['ignore'])
-            ignore_workids = list(ignore_map.values())
-
+            ignore_workids = list(ignore_map.values()) + workids
             recommendations = [r for r in recommendations if r.work not in ignore_workids]
+
+        work2pid, timings['work2pid'] = self.__work2pid([r.work for r in recommendations])
         recommendations, timings['augment'] = self.__augment(recommendations[kwargs['start']:maxresults], work2pid, work2meta, work2origin)
 
         timings['total'] = to_milli(datetime.datetime.now() - start)
@@ -147,20 +145,22 @@ class LoansRecommender():
         return self.rename_keys(recommendations, {'title': 'debug-title', 'creator': 'debug-creator'}), {'timings': timings}
 
     @staticmethod
-    def __page_info(kwargs, start=0, rows=10):
+    def __paging(kwargs, start=0, rows=10):
         """ add paging info to kwargs if not present"""
         if 'start' not in kwargs:
             kwargs['start'] = start
         if 'rows' not in kwargs:
             kwargs['rows'] = rows
-        return kwargs
+        return kwargs, kwargs['start'] + kwargs['rows']
 
     def __workids(self, likes):
+        """ Fetch workif for pids in likes"""
         start = datetime.datetime.now()
         workids = self.mapper.pids2works(likes)
         return workids, to_milli(datetime.datetime.now() - start)
 
     def __work2meta(self, works):
+        """ fetch metadata for works """
         start = datetime.datetime.now()
         work2meta = self.mapper.works2meta(works)
         return work2meta, to_milli(datetime.datetime.now() - start)
@@ -171,6 +171,7 @@ class LoansRecommender():
         return work2pid, to_milli(datetime.datetime.now() - start)
 
     def rename_keys(self, recommendations, keys):
+        """ rename keynames in recommendations """
         for rec in recommendations:
             for name, newname in keys.items():
                 if name in rec:
@@ -179,6 +180,7 @@ class LoansRecommender():
         return recommendations
 
     def __augment(self, recommendations, work2pid, work2meta, work2origin):
+        """ augment recommendation entries with data from work2pid, work2meta and work2origin"""
         start = datetime.datetime.now()
         augmented_recommendations = []
         for workid, value in recommendations:
@@ -190,6 +192,7 @@ class LoansRecommender():
         return augmented_recommendations, to_milli(datetime.datetime.now() - start)
 
     def __fetch(self, workids, pid2work, limit):
+        """ fetch recommendations for the provided workids """
         work2pid = {w: p for p, w in pid2work.items()}
         start = datetime.datetime.now()
         result = self.reader.find(*workids)
