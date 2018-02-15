@@ -114,8 +114,8 @@ class LoansRecommender():
         start = datetime.datetime.now()
         logger.debug("%s called with %s", self.name, kwargs)
 
-        kwargs = self.__page_info(kwargs)
         timings = {}
+        kwargs, maxresults = self.__paging(kwargs)
 
         pid2work, timings['workids'] = self.__workids(kwargs['like'])
 
@@ -123,7 +123,6 @@ class LoansRecommender():
         if not workids:
             die("Could not find any works for pids %s" % kwargs['like'], exception=RecommenderError)
 
-        maxresults = kwargs['start'] + kwargs['rows']
         num_cand = maxresults * 5
         recommendations, work2origin, timings['fetch'], timings['from-analysis'] = self.__fetch(workids, pid2work, num_cand)
 
@@ -147,13 +146,13 @@ class LoansRecommender():
         return self.rename_keys(recommendations, {'title': 'debug-title', 'creator': 'debug-creator'}), {'timings': timings}
 
     @staticmethod
-    def __page_info(kwargs, start=0, rows=10):
+    def __paging(kwargs, start=0, rows=10):
         """ add paging info to kwargs if not present"""
         if 'start' not in kwargs:
             kwargs['start'] = start
         if 'rows' not in kwargs:
             kwargs['rows'] = rows
-        return kwargs
+        return kwargs, kwargs['start'] + kwargs['rows']
 
     def __workids(self, likes):
         start = datetime.datetime.now()
