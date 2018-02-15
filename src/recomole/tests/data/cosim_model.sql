@@ -31,7 +31,7 @@ CREATE TABLE cosim_model (
 );
 
 
-ALTER TABLE cosim_model OWNER TO "recommender-models";
+ALTER TABLE cosim_model OWNER TO lowell;
 
 --
 -- Data for Name: cosim_model; Type: TABLE DATA; Schema: public; Owner: recommender-models
