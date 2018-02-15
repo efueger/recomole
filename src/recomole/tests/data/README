@@ -14,11 +14,7 @@ Test dumps er konstrueret på følgende måde
    Det er de pider der findes i pids.txt der er brugt i nuværende testsæt
 
 
-
-    INSERT INTO loans_test SELECT * FROM loans WHERE pid IN (pid liste...);
-3.
-
-3. opret følgende test-tabeller:
+2. opret følgende test-tabeller:
    loans_test, relations_test, work_meta_test og metadata_test, pid_loancount og kopier relevant data ind i dem:
     INSERT INTO loans_test SELECT * FROM loans WHERE pid IN (pid liste...);
     INSERT INTO metadata_test SELECT * FROM metadata WHERE pid IN (pid liste...);
@@ -26,18 +22,20 @@ Test dumps er konstrueret på følgende måde
     INSERT INTO relations_test SELECT * FROM relations WHERE pid IN (pid liste...);
     INSERT INTO workid_meta_test SELECT * FROM workid_meta WHERE workid IN (SELECT workid FROM relations WHERE pid IN (pid liste...));
 
-4. opret cosim_model_test (RECMOD), og lav byg test model (via script i mobus pakke)
+3. opret cosim_model_test (RECMOD), og lav byg test model (via script i mobus pakke)
     build-loan-model-postgres --test
-    tager ca. 35 min. selvom det producere en lille matrice (skal igennem alle users)
+    tager ca. 40 min. selvom det producere en lille matrice (skal igennem alle users)
 
-5. dump tabeller:
+4. dump tabeller:
     pg_dump -t relations_test $LOWELL_URL > relations.sql
     pg_dump -t workid_meta_test $LOWELL_URL > workid_meta.sql
     pg_dump -t metadata_test $LOWELL_URL > metadata.sql
-    pg_dump -t cosim_model_test $RECMOD_URL > cosim_model.sql
     pg_dump -t pid_loancount_test $LOWELL_URL > pid_loancount.sql
+    pg_dump -t cosim_model_test $RECMOD_URL > cosim_model.sql
 
-    der er et par setting der skal fjernes (postgres versioner?)
+    der er et par settings der skal fjernes (postgres versioner?)
+       SET idle_in_transaction_session_timeout = 0;
+       SET row_security = off;
 
     Desuden har jeg ændret owner på cosim_model så recmod og lowell
     tabeller kan bo i samme database
