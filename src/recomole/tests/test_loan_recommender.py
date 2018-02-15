@@ -23,8 +23,10 @@ class TestFilterCreator(unittest.TestCase):
     def test_test(self):
         print("travis", TRAVIS)
 
-        conn = connect(self.url)
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM relations")
-        for row in cur:
-            print("ROW", row)
+        actual = self.recommender({'like': ['870970-basis:29401691','870970-basis:29440670']})
+        print(actual)
+        # conn = connect(self.url)
+        # cur = conn.cursor()
+        # cur.execute("SELECT * FROM relations")
+        # for row in cur:
+        #     print("ROW", row)
