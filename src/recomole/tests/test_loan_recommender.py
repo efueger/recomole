@@ -3,8 +3,11 @@
 # -*- mode: python -*-
 import os
 from psycopg2 import connect
-
 import unittest
+
+from mobus import PostgresReader
+from recomole.loans_recommender import LoansRecommender
+
 
 TRAVIS = True if 'TRAVIS' in os.environ else False
 
@@ -13,7 +16,9 @@ TRAVIS = True if 'TRAVIS' in os.environ else False
 class TestFilterCreator(unittest.TestCase):
 
     def setUp(self):
-        self.url = 'postgresql://lowell:test@localhost/testing_db'
+        url = 'postgresql://lowell:test@localhost/testing_db'
+        reader = PostgresReader(url, 'cosim_model')
+        self.recommender = LoansRecommender(url, reader)
 
     def test_test(self):
         print("travis", TRAVIS)
