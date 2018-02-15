@@ -15,6 +15,7 @@ before_script:
   - psql -d testing_db -f src/recomole/tests/data/metadata.sql
   - psql -d testing_db -f src/recomole/tests/data/relations.sql
   - psql -d testing_db -f src/recomole/tests/data/workid_meta.sql
+  - psql -d testing_db -f src/recomole/tests/data/pid_loancount.sql
 
 python:
   - "3.5"
@@ -32,7 +33,7 @@ install:
 
 # command to run tests
 script:
-  - pytest --cov=src/$PACKAGE
+  - pytest -s --cov=src/$PACKAGE
   - sphinx-apidoc --force -o docs/source/ src/$PACKAGE `pwd`/src/$PACKAGE/tests/
   - python setup.py build_sphinx --fresh-env --all-files --build-dir docs/build
   - make-build-info
