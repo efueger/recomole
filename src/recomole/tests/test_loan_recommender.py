@@ -24,11 +24,20 @@ class TestFilterCreator(unittest.TestCase):
         reader = PostgresReader(url, 'cosim_model')
         self.recommender = LoansRecommender(url, reader)
 
-    # def test_simple_recommenmdation(self):
-    #     expected = {'870970-basis:52932858', '870970-basis:52932319', '870970-basis:23481561'}
-    #     arguments = {'like': ['870970-basis:29401691', '870970-basis:52932319', '870970-basis:52932858']}
-    #     recommendations, timings = self.recommender(**arguments)
-    #     self.assertEqual(expected, make_pid_set(recommendations))
+    def test_simple_recommenmdation(self):
+        expected = {'870970-basis:27925715',
+                    '870970-basis:29705119',
+                    '870970-basis:28075480',
+                    '870970-basis:51268172',
+                    '870970-basis:29401691',
+                    '870970-basis:23481561'}
+
+        arguments = {'like': ['870970-basis:28634560']}
+        recommendations, timings = self.recommender(**arguments)
+        self.assertEqual(expected, make_pid_set(recommendations))
+
+
+
 
     def test_raises_if_only_unknown_pids_are_given(self):
         with self.assertRaises(RecommenderError):
