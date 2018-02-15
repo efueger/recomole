@@ -101,6 +101,9 @@ class TestFilterCreator(unittest.TestCase):
 
         arguments = {'like': ['870970-basis:28634560'], 'filters': {'authorFlood': 2}}
         recommendations, timings = self.recommender(**arguments)
-        print("\n RECS ", make_pid_set(recommendations))
+        print("\n RECS ", recommendations)
         # self.assertEqual(expected, make_pid_set(recommendations))
 
+
+
+# {'870970-basis:27925715', '870970-basis:29401691', '870970-basis:23481561', '870970-basis:29705119'}
