@@ -137,7 +137,7 @@ class LoansRecommender():
 
         if 'ignore' in kwargs:
             ignore_map, timings['ignore-work2pid'] = self.__workids(kwargs['ignore'])
-            ignore_workids = list(ignore_map.values())
+            ignore_workids = list(ignore_map.values()) + workids
 
             recommendations = [r for r in recommendations if r.work not in ignore_workids]
         recommendations, timings['augment'] = self.__augment(recommendations[kwargs['start']:maxresults], work2pid, work2meta, work2origin)
