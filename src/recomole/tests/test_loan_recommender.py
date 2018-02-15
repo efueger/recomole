@@ -20,9 +20,9 @@ class TestFilterCreator(unittest.TestCase):
         reader = PostgresReader(url, 'cosim_model')
         self.recommender = LoansRecommender(url, reader)
 
-    def test_test(self):
+    def test_simple_recommenmdation(self):
         print("travis", TRAVIS)
-        arguments = {'like': ['870970-basis:29401691','870970-basis:29440670']}
+        arguments = {'like': ['870970-basis:29401691']}
         actual = self.recommender(**arguments)
         print(actual)
         # conn = connect(self.url)
