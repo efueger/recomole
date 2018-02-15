@@ -71,7 +71,7 @@ class LoansSpecification():
                 die("type mismatch: %s '%s' should be of type %s" % (name, key, allowed_keys[key]), SpecificationError)
 
 
-def flood_filter(recommendations, work2meta, creatormax):
+def author_flood_filter(recommendations, work2meta, creatormax):
     """
     Author flood filter
     """
@@ -112,13 +112,12 @@ class LoansRecommender():
 
     def recommend(self, **kwargs):
         start = datetime.datetime.now()
+        timings = {}
         logger.debug("%s called with %s", self.name, kwargs)
 
-        timings = {}
         kwargs, maxresults = self.__paging(kwargs)
 
         pid2work, timings['workids'] = self.__workids(kwargs['like'])
-
         workids = list(pid2work.values())
         if not workids:
             die("Could not find any works for pids %s" % kwargs['like'], exception=RecommenderError)
@@ -128,8 +127,8 @@ class LoansRecommender():
 
         work2meta, timings['work2meta'] = self.__work2meta([r.work for r in recommendations])
 
-        if 'creatormax' in kwargs and maxresults > kwargs['creatormax']:
-            recommendations, flood_timing = flood_filter(recommendations, work2meta, kwargs['creatormax'])
+        if 'filters' in kwargs and 'authorFloodFilter' in kwargs['filters'] and kwargs['filters']['authorFloodFilter'] < maxresults:
+            recommendations, flood_timing = author_flood_filter(recommendations, work2meta, kwargs['filters']['authorFloodFilter'])
             timings['flood'] = to_milli(flood_timing)
 
         work2pid, timings['work2pid'] = self.__work2pid([r.work for r in recommendations])
