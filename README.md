@@ -71,12 +71,12 @@ Each *response* item consists of a recommended pid and some additional info.
 The info object consists of the following keys:
 
 * **pid**: pid in recommended work with highest loancount
-* **debug-work**: Recommmended work (should only be used for debugging)
 * **val**: Similarity value
-* **debug-creator**: Creator of recommended work (should only be used for debugging)
-* **debug-title**: Title of recommended work (should only be used for debugging)
 * **loancount**: Number of loans of recommended pid
 * **from**: recommendations based in this item
+* **debug-creator**: Creator of recommended work (should only be used for debugging)
+* **debug-title**: Title of recommended work (should only be used for debugging)
+* **debug-work**: Recommmended work (should only be used for debugging)
     
 The *responseHeader* consists timings and other forms of metadata..</br></br>
 
