@@ -66,18 +66,22 @@ class TestFilterCreator(unittest.TestCase):
         recommendations, timings = self.recommender(**arguments)
         self.assertEqual(expected, make_pid_set(recommendations))
 
-    # def test_paging_rows(self):
-    #     expected = {'870970-basis:52932858', '870970-basis:52932319'}
-    #     arguments = {'like': ['870970-basis:29401691', '870970-basis:52932319', '870970-basis:52932858'], 'rows': 2}
-    #     recommendations, timings = self.recommender(**arguments)
-    #     self.assertEqual(expected, make_pid_set(recommendations))
+    def test_paging_rows(self):
+        expected = {'870970-basis:27925715',
+                    '870970-basis:29705119'}
 
-    # def test_paging_start(self):
-    #     expected = {'870970-basis:52932319', '870970-basis:23481561'}
-    #     arguments = {'like': ['870970-basis:29401691', '870970-basis:52932319', '870970-basis:52932858'], 'start': 1}
-    #     recommendations, timings = self.recommender(**arguments)
-    #     print(make_pid_set(recommendations))
-    #     #self.assertEqual(expected, make_pid_set(recommendations))
+        arguments = {'like': ['870970-basis:28634560', 'rows': 2]}
+        recommendations, timings = self.recommender(**arguments)
+        self.assertEqual(expected, make_pid_set(recommendations))
+
+    def test_paging_start(self):
+        expected = {'870970-basis:27925715',
+                    '870970-basis:29705119'}
+
+        arguments = {'like': ['870970-basis:28634560'], 'start': 2}
+        recommendations, timings = self.recommender(**arguments)
+        print("\n RECS ", make_pid_set(recommendations))
+        self.assertEqual(expected, make_pid_set(recommendations))
 
     # def test_paging_start_and_rows(self):
     #     expected = {'870970-basis:52932319'}
