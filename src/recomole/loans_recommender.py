@@ -127,8 +127,8 @@ class LoansRecommender():
 
         work2meta, timings['work2meta'] = self.__work2meta([r.work for r in recommendations])
 
-        if 'filters' in kwargs and 'authorFloodFilter' in kwargs['filters'] and kwargs['filters']['authorFloodFilter'] < maxresults:
-            recommendations, flood_timing = author_flood_filter(recommendations, work2meta, kwargs['filters']['authorFloodFilter'])
+        if 'filters' in kwargs and 'authorFloodFilter' in kwargs['filters'] and kwargs['filters']['authorFlood'] < maxresults:
+            recommendations, flood_timing = author_flood_filter(recommendations, work2meta, kwargs['filters']['authorFlood'])
             timings['flood'] = to_milli(flood_timing)
 
         work2pid, timings['work2pid'] = self.__work2pid([r.work for r in recommendations])
