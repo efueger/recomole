@@ -4,31 +4,27 @@ Test dumps er konstrueret på følgende måde
 
 1. Interessante pider er fundet at kigge ned i metadata tabellen,
    hvorefter alle pider i de tilhørende værker er findes (relations
-   tabellen brugess til dette).
+   tabellen bruges til dette).
    f.eks.
     870970-basis:29401691
     870970-basis:29440670
-    870970-basis:50741397
-    870970-basis:52770831
-    870970-basis:52932319
-    870970-basis:52932858
-    870970-basis:23481561
-    870970-basis:28685610
-    870970-basis:29872155
-    870970-basis:52602815
+    .
+    .
+    .
+   Det er de pider der findes i pids.txt der er brugt i nuværende testsæt
 
-2. Der er lavet en loans_test tabel hvor alle lån for de ønskede pider kopieres over i.
-   f.eks.
-    INSERT INTO loans_test SELECT * FROM loans WHERE pid IN ('870970-basis:29401691','870970-basis:29440670','870970-basis:50741397','870970-basis:52770831','870970-basis:52932319','870970-basis:52932858','870970-basis:23481561','870970-basis:28685610','870970-basis:29872155','870970-basis:52602815');
+
+
+    INSERT INTO loans_test SELECT * FROM loans WHERE pid IN (pid liste...);
 3.
 
-3. opret test_baser relations_test, work_meta_test og metadata_test, pid_loancount og kopier relevant data ind i dem:
-
-    INSERT INTO metadata_test SELECT * FROM metadata WHERE pid IN ('870970-basis:29401691','870970-basis:29440670','870970-basis:50741397','870970-basis:52770831','870970-basis:52932319','870970-basis:52932858','870970-basis:23481561','870970-basis:28685610','870970-basis:29872155','870970-basis:52602815');
-    INSERT INTO pid_loancount_test SELECT * FROM pid_loancount WHERE pid IN ('870970-basis:29401691','870970-basis:29440670','870970-basis:50741397','870970-basis:52770831','870970-basis:52932319','870970-basis:52932858','870970-basis:23481561','870970-basis:28685610','870970-basis:29872155','870970-basis:52602815');
-    INSERT INTO relations_test SELECT * FROM relations WHERE pid IN ('870970-basis:29401691','870970-basis:29440670','870970-basis:50741397','870970-basis:52770831','870970-basis:52932319','870970-basis:52932858','870970-basis:23481561','870970-basis:28685610','870970-basis:29872155','870970-basis:52602815');
-    INSERT INTO workid_meta_test SELECT * FROM workid_meta WHERE workid IN (SELECT workid FROM relations WHERE pid IN ('870970-basis:29401691','870970-basis:29440670','870970-basis:50741397','870970-basis:52770831','870970-basis:52932319','870970-basis:52932858','870970-basis:23481561','870970-basis:28685610','870970-basis:29872155','870970-basis:52602815'));
-
+3. opret følgende test-tabeller:
+   loans_test, relations_test, work_meta_test og metadata_test, pid_loancount og kopier relevant data ind i dem:
+    INSERT INTO loans_test SELECT * FROM loans WHERE pid IN (pid liste...);
+    INSERT INTO metadata_test SELECT * FROM metadata WHERE pid IN (pid liste...);
+    INSERT INTO pid_loancount_test SELECT * FROM pid_loancount WHERE pid IN (pid liste...);
+    INSERT INTO relations_test SELECT * FROM relations WHERE pid IN (pid liste...);
+    INSERT INTO workid_meta_test SELECT * FROM workid_meta WHERE workid IN (SELECT workid FROM relations WHERE pid IN (pid liste...));
 
 4. opret cosim_model_test (RECMOD), og lav byg test model (via script i mobus pakke)
     build-loan-model-postgres --test
