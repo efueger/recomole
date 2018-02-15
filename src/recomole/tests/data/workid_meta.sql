@@ -37,10 +37,15 @@ ALTER TABLE workid_meta OWNER TO lowell;
 
 COPY workid_meta (workid, creator, title) FROM stdin;
 work:10602093	Niklas Ekstedt	Food from the fire
-work:12601817		Just sing it!
-work:4813157	Joel Schumacher	Batman forever
 work:1000042	George R. R. Martin	Kongernes kamp
+work:4813157	Joel Schumacher	Batman forever
+work:962083	Jussi Adler-Olsen	Journal 64
+work:12601817		Just sing it!
+work:677935	Jussi Adler-Olsen	Alfabethuset
+work:1412991	Jussi Adler-Olsen	Den grænseløse
+work:1011808	Jussi Adler-Olsen	Marco effekten
 work:12601842	Jakob Høgsbro	Runeskrift
+work:935152	Jussi Adler-Olsen	Flaskepost fra P
 \.
 
 
