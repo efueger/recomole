@@ -19,22 +19,22 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: pid_loancount_test; Type: TABLE; Schema: public; Owner: lowell
+-- Name: pid_loancount; Type: TABLE; Schema: public; Owner: lowell
 --
 
-CREATE TABLE pid_loancount_test (
+CREATE TABLE pid_loancount (
     pid text NOT NULL,
     loancount integer
 );
 
 
-ALTER TABLE pid_loancount_test OWNER TO lowell;
+ALTER TABLE pid_loancount OWNER TO lowell;
 
 --
--- Data for Name: pid_loancount_test; Type: TABLE DATA; Schema: public; Owner: lowell
+-- Data for Name: pid_loancount; Type: TABLE DATA; Schema: public; Owner: lowell
 --
 
-COPY pid_loancount_test (pid, loancount) FROM stdin;
+COPY pid_loancount (pid, loancount) FROM stdin;
 870970-basis:27925715	20287
 870970-basis:51268172	28313
 870970-basis:29705119	31916
@@ -102,11 +102,11 @@ COPY pid_loancount_test (pid, loancount) FROM stdin;
 
 
 --
--- Name: pid_loancount_test pid_loancount_test_pkey; Type: CONSTRAINT; Schema: public; Owner: lowell
+-- Name: pid_loancount pid_loancount_pkey; Type: CONSTRAINT; Schema: public; Owner: lowell
 --
 
-ALTER TABLE ONLY pid_loancount_test
-    ADD CONSTRAINT pid_loancount_test_pkey PRIMARY KEY (pid);
+ALTER TABLE ONLY pid_loancount
+    ADD CONSTRAINT pid_loancount_pkey PRIMARY KEY (pid);
 
 
 --

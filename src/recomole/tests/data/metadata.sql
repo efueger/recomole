@@ -19,10 +19,10 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: metadata_test; Type: TABLE; Schema: public; Owner: lowell
+-- Name: metadata; Type: TABLE; Schema: public; Owner: lowell
 --
 
-CREATE TABLE metadata_test (
+CREATE TABLE metadata (
     pid text NOT NULL,
     nid integer NOT NULL,
     modified timestamp without time zone NOT NULL,
@@ -31,13 +31,13 @@ CREATE TABLE metadata_test (
 );
 
 
-ALTER TABLE metadata_test OWNER TO lowell;
+ALTER TABLE metadata OWNER TO lowell;
 
 --
--- Data for Name: metadata_test; Type: TABLE DATA; Schema: public; Owner: lowell
+-- Data for Name: metadata; Type: TABLE DATA; Schema: public; Owner: lowell
 --
 
-COPY metadata_test (pid, nid, modified, metadata, deleted) FROM stdin;
+COPY metadata (pid, nid, modified, metadata, deleted) FROM stdin;
 125610-katalog:28014228	2994328	2016-09-28 04:51:30.706	{"dk5": ["sk"], "date": ["2009"], "type": ["Lydbog (cd-mp3)"], "title": ["Flaskepost fra P"], "creator": ["Jussi Adler-Olsen"], "subject": ["Danmark", "Skønlitteratur", "politiromaner", "psykopater", "krimi", "religion"], "language": ["dan"], "contributor": ["Dan Schlosser"], "subject_dbc": ["religion", "psykopater", "politiromaner", "krimi"], "subject_spat": ["Danmark"]}	f
 125610-katalog:28044348	2471005	2016-09-28 04:51:19.483	{"dk5": ["fb"], "date": ["2009"], "type": ["Lydbog (cd-mp3)"], "title": ["Alfabethuset"], "creator": ["Jussi Adler-Olsen"], "language": ["dan"], "contributor": ["Fjord Trier Hansen"]}	f
 125610-katalog:28075480	3003395	2018-02-08 08:33:22.561	{"dk5": ["sk"], "date": ["2009"], "type": ["Bog"], "title": ["Alfabethuset"], "creator": ["Jussi Adler-Olsen"], "subject": ["piloter", "psykiatriske patienter", "jagerfly", "den 2. verdenskrig", "psykiatriske hospitaler", "Skønlitteratur", "spænding"], "language": ["dan"], "subject_dbc": ["piloter", "jagerfly", "den 2. verdenskrig", "psykiatriske hospitaler", "psykiatriske patienter", "spænding"]}	f
@@ -289,32 +289,32 @@ COPY metadata_test (pid, nid, modified, metadata, deleted) FROM stdin;
 
 
 --
--- Name: metadata_test metadata_test_pkey; Type: CONSTRAINT; Schema: public; Owner: lowell
+-- Name: metadata metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: lowell
 --
 
-ALTER TABLE ONLY metadata_test
-    ADD CONSTRAINT metadata_test_pkey PRIMARY KEY (pid);
-
-
---
--- Name: metadata_test_doc_index; Type: INDEX; Schema: public; Owner: lowell
---
-
-CREATE INDEX metadata_test_doc_index ON metadata_test USING gin (metadata);
+ALTER TABLE ONLY metadata
+    ADD CONSTRAINT metadata_pkey PRIMARY KEY (pid);
 
 
 --
--- Name: metadata_test_modified_index; Type: INDEX; Schema: public; Owner: lowell
+-- Name: metadata_doc_index; Type: INDEX; Schema: public; Owner: lowell
 --
 
-CREATE INDEX metadata_test_modified_index ON metadata_test USING btree (modified);
+CREATE INDEX metadata_doc_index ON metadata USING gin (metadata);
 
 
 --
--- Name: metadata_test_nid_index; Type: INDEX; Schema: public; Owner: lowell
+-- Name: metadata_modified_index; Type: INDEX; Schema: public; Owner: lowell
 --
 
-CREATE INDEX metadata_test_nid_index ON metadata_test USING btree (nid);
+CREATE INDEX metadata_modified_index ON metadata USING btree (modified);
+
+
+--
+-- Name: metadata_nid_index; Type: INDEX; Schema: public; Owner: lowell
+--
+
+CREATE INDEX metadata_nid_index ON metadata USING btree (nid);
 
 
 --

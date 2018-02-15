@@ -19,23 +19,23 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: workid_meta_test; Type: TABLE; Schema: public; Owner: lowell
+-- Name: workid_meta; Type: TABLE; Schema: public; Owner: lowell
 --
 
-CREATE TABLE workid_meta_test (
+CREATE TABLE workid_meta (
     workid text NOT NULL,
     creator text,
     title text
 );
 
 
-ALTER TABLE workid_meta_test OWNER TO lowell;
+ALTER TABLE workid_meta OWNER TO lowell;
 
 --
--- Data for Name: workid_meta_test; Type: TABLE DATA; Schema: public; Owner: lowell
+-- Data for Name: workid_meta; Type: TABLE DATA; Schema: public; Owner: lowell
 --
 
-COPY workid_meta_test (workid, creator, title) FROM stdin;
+COPY workid_meta (workid, creator, title) FROM stdin;
 work:10602093	Niklas Ekstedt	Food from the fire
 work:1000042	George R. R. Martin	Kongernes kamp
 work:4813157	Joel Schumacher	Batman forever
@@ -50,11 +50,11 @@ work:935152	Jussi Adler-Olsen	Flaskepost fra P
 
 
 --
--- Name: workid_meta_test workid_meta_test_pkey; Type: CONSTRAINT; Schema: public; Owner: lowell
+-- Name: workid_meta workid_meta_pkey; Type: CONSTRAINT; Schema: public; Owner: lowell
 --
 
-ALTER TABLE ONLY workid_meta_test
-    ADD CONSTRAINT workid_meta_test_pkey PRIMARY KEY (workid);
+ALTER TABLE ONLY workid_meta
+    ADD CONSTRAINT workid_meta_pkey PRIMARY KEY (workid);
 
 
 --

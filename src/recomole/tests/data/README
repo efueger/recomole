@@ -33,6 +33,8 @@ Test dumps er konstrueret på følgende måde
     pg_dump -t pid_loancount_test $LOWELL_URL > pid_loancount.sql
     pg_dump -t cosim_model_test $RECMOD_URL > cosim_model.sql
 
+    i alle dump filerne ændres tabelnavn fra *_test til *
+
     der er et par settings der skal fjernes (postgres versioner?)
        SET idle_in_transaction_session_timeout = 0;
        SET row_security = off;

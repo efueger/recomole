@@ -19,10 +19,10 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: cosim_model_test; Type: TABLE; Schema: public; Owner: recommender-models
+-- Name: cosim_model; Type: TABLE; Schema: public; Owner: recommender-models
 --
 
-CREATE TABLE cosim_model_test (
+CREATE TABLE cosim_model (
     label text NOT NULL,
     keys bytea,
     vals bytea,
@@ -31,13 +31,13 @@ CREATE TABLE cosim_model_test (
 );
 
 
-ALTER TABLE cosim_model_test OWNER TO lowell;
+ALTER TABLE cosim_model OWNER TO lowell;
 
 --
--- Data for Name: cosim_model_test; Type: TABLE DATA; Schema: public; Owner: recommender-models
+-- Data for Name: cosim_model; Type: TABLE DATA; Schema: public; Owner: recommender-models
 --
 
-COPY cosim_model_test (label, keys, vals, keys_dtype, vals_dtype) FROM stdin;
+COPY cosim_model (label, keys, vals, keys_dtype, vals_dtype) FROM stdin;
 work:962083	\\x776f726b3a39363230383300776f726b3a39333531353200776f726b3a31303131383038776f726b3a36373739333500776f726b3a31343132393931776f726b3a31303030303432776f726b3a34383133313537	\\xc6efffffffffef3f8b8ab19da06dde3fb75ce3502eaad93fd8e373e3d00bd23f158f331d0502d03fe6ad9fcccfcfaa3f6efe073b45757e3f	|S12	float64
 work:1011808	\\x776f726b3a31303131383038776f726b3a39363230383300776f726b3a31343132393931776f726b3a39333531353200776f726b3a36373739333500776f726b3a31303030303432776f726b3a34383133313537	\\x590900000000f03fb75ce3502eaad93fbf50f97f64b5d73fed79d44d6536d63fff7b703b7d76ce3f8c4c3bc51be1ae3f0d0eafc019917e3f	|S12	float64
 work:677935	\\x776f726b3a36373739333500776f726b3a39363230383300776f726b3a39333531353200776f726b3a31303131383038776f726b3a31343132393931776f726b3a31303030303432776f726b3a34383133313537	\\x970500000000f03fd8e373e3d00bd23fdbe0b900d5e0d13fff7b703b7d76ce3fc95f104c7296c63fd6190a432520a63f13a700ef017a723f	|S12	float64
@@ -53,11 +53,11 @@ POPULAR	\\x776f726b3a3135383734363800776f726b3a3936323038330000776f726b3a3130313
 
 
 --
--- Name: cosim_model_test cosim_model_test_pkey; Type: CONSTRAINT; Schema: public; Owner: recommender-models
+-- Name: cosim_model cosim_model_pkey; Type: CONSTRAINT; Schema: public; Owner: recommender-models
 --
 
-ALTER TABLE ONLY cosim_model_test
-    ADD CONSTRAINT cosim_model_test_pkey PRIMARY KEY (label);
+ALTER TABLE ONLY cosim_model
+    ADD CONSTRAINT cosim_model_pkey PRIMARY KEY (label);
 
 
 --
