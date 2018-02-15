@@ -36,19 +36,22 @@ class TestFilterCreator(unittest.TestCase):
         recommendations, timings = self.recommender(**arguments)
         self.assertEqual(expected, make_pid_set(recommendations))
 
-
-
-
     def test_raises_if_only_unknown_pids_are_given(self):
         with self.assertRaises(RecommenderError):
             arguments = {'like': ['unknown:pid']}
             self.recommender(** arguments)
 
-    # def test_ignores_unknown_pid_among_known_pids(self):
-    #     expected = {'870970-basis:52932319'}
-    #     arguments = {'like': ['unknown:pid', '870970-basis:52932858']}
-    #     recommendations, timings = self.recommender(**arguments)
-    #     self.assertEqual(expected, make_pid_set(recommendations))
+    def test_ignores_unknown_pid_among_known_pids(self):
+        expected = {'870970-basis:27925715',
+                    '870970-basis:29705119',
+                    '870970-basis:28075480',
+                    '870970-basis:51268172',
+                    '870970-basis:29401691',
+                    '870970-basis:23481561'}
+
+        arguments = {'like': ['unknown:pid', '870970-basis:28634560']}
+        recommendations, timings = self.recommender(**arguments)
+        self.assertEqual(expected, make_pid_set(recommendations))
 
     # def test_ignore_does_not_return_ignored_pid(self):
     #     expected = {'870970-basis:52932858', '870970-basis:52932319'}
