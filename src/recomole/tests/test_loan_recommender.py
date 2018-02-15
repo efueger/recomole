@@ -21,10 +21,10 @@ class TestFilterCreator(unittest.TestCase):
         self.recommender = LoansRecommender(url, reader)
 
     def test_simple_recommenmdation(self):
-        print("travis", TRAVIS)
-        arguments = {'like': ['870970-basis:29401691']}
-        actual = self.recommender(**arguments)
-        print(actual)
+
+        arguments = {'like': ['870970-basis:29401691', '870970-basis:52932319', '870970-basis:52932858']}
+        recommendations, timings = self.recommender(**arguments)
+        print(recommendations)
         # conn = connect(self.url)
         # cur = conn.cursor()
         # cur.execute("SELECT * FROM relations")
