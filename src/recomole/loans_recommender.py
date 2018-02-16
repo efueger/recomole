@@ -126,23 +126,30 @@ class LoansRecommender():
         recommendations, work2origin, timings['fetch'], timings['from-analysis'] = self.__fetch(workids, pid2work, num_cand)
 
         work2meta, timings['work2meta'] = self.__work2meta([r.work for r in recommendations])
+        recommendations, timings['ignore'] = self.__remove_ignores(workids, kwargs, recommendations)
 
+        # TODO: Refactor filter functionaliry into function. This can be done when other filters are implemented
+        work2pid, timings['work2pid'] = self.__work2pid([r.work for r in recommendations])
         if 'filters' in kwargs and 'authorFlood' in kwargs['filters'] and kwargs['filters']['authorFlood'] < maxresults:
             logger.debug("applying floodfilter")
             recommendations, flood_timing = author_flood_filter(recommendations, work2meta, kwargs['filters']['authorFlood'])
             timings['flood'] = to_milli(flood_timing)
 
-        if 'ignore' in kwargs:
-            ignore_map, timings['ignore-work2pid'] = self.__workids(kwargs['ignore'])
-            ignore_workids = list(ignore_map.values()) + workids
-            recommendations = [r for r in recommendations if r.work not in ignore_workids]
-
-        work2pid, timings['work2pid'] = self.__work2pid([r.work for r in recommendations])
         recommendations, timings['augment'] = self.__augment(recommendations[kwargs['start']:maxresults], work2pid, work2meta, work2origin)
 
         timings['total'] = to_milli(datetime.datetime.now() - start)
         logger.debug("Returning result %s, %s", recommendations, {'timings': timings})
         return self.rename_keys(recommendations, {'title': 'debug-title', 'creator': 'debug-creator'}), {'timings': timings}
+
+    def __remove_ignores(self, workids, kwargs, recommendations):
+        """ remove works from 'ignore' list (if any) and the pids in 'like' from recommendation list """
+        start = datetime.datetime.now()
+        ignore_workids = list(workids)
+        if 'ignore' in kwargs:
+            ignore_map, _ = self.__workids(kwargs['ignore'])
+            ignore_workids += list(ignore_map.values())
+        recommendations = [r for r in recommendations if r.work not in ignore_workids]
+        return recommendations, to_milli(datetime.datetime.now() - start)
 
     @staticmethod
     def __paging(kwargs, start=0, rows=10):
