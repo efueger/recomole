@@ -126,7 +126,7 @@ class LoansRecommender():
         recommendations, work2origin, timings['fetch'], timings['from-analysis'] = self.__fetch(workids, pid2work, num_cand)
 
         work2meta, timings['work2meta'] = self.__work2meta([r.work for r in recommendations])
-        recommendations, timings['ignore-work2pid'] = self.__remove_ignores(workids, kwargs, recommendations)
+        recommendations, timings['ignore'] = self.__remove_ignores(workids, kwargs, recommendations)
 
         # TODO: Refactor filter functionaliry into function. This can be done when other filters are implemented
         work2pid, timings['work2pid'] = self.__work2pid([r.work for r in recommendations])
@@ -143,12 +143,13 @@ class LoansRecommender():
 
     def __remove_ignores(self, workids, kwargs, recommendations):
         """ remove works from 'ignore' list (if any) and the pids in 'like' from recommendation list """
+        start = datetime.datetime.now()
         ignore_workids = list(workids)
         if 'ignore' in kwargs:
-            ignore_map, timing = self.__workids(kwargs['ignore'])
+            ignore_map, _ = self.__workids(kwargs['ignore'])
             ignore_workids += list(ignore_map.values())
         recommendations = [r for r in recommendations if r.work not in ignore_workids]
-        return recommendations, timing
+        return recommendations, to_milli(datetime.datetime.now() - start)
 
     @staticmethod
     def __paging(kwargs, start=0, rows=10):
