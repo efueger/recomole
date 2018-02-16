@@ -128,18 +128,23 @@ class LoansRecommender():
         work2meta, timings['work2meta'] = self.__work2meta([r.work for r in recommendations])
         recommendations, timings['ignore'] = self.__remove_ignores(workids, kwargs, recommendations)
 
-        # TODO: Refactor filter functionaliry into function. This can be done when other filters are implemented
-        work2pid, timings['work2pid'] = self.__work2pid([r.work for r in recommendations])
-        if 'filters' in kwargs and 'authorFlood' in kwargs['filters'] and kwargs['filters']['authorFlood'] < maxresults:
-            logger.debug("applying floodfilter")
-            recommendations, flood_timing = author_flood_filter(recommendations, work2meta, kwargs['filters']['authorFlood'])
-            timings['flood'] = to_milli(flood_timing)
+        recommendations, work2pid, timings['filter'] = self.__apply_filters(recommendations, kwargs, work2meta, maxresults)
 
         recommendations, timings['augment'] = self.__augment(recommendations[kwargs['start']:maxresults], work2pid, work2meta, work2origin)
 
         timings['total'] = to_milli(datetime.datetime.now() - start)
         logger.debug("Returning result %s, %s", recommendations, {'timings': timings})
         return self.rename_keys(recommendations, {'title': 'debug-title', 'creator': 'debug-creator'}), {'timings': timings}
+
+    def __apply_filters(self, recommendations, kwargs, work2meta, maxresults):
+        """ Filter works and choose pid from work based on filters and loancount """
+        logger.debug("applying filters")
+        start = datetime.datetime.now()
+        work2pid, _ = self.__work2pid([r.work for r in recommendations])
+        if 'filters' in kwargs and 'authorFlood' in kwargs['filters'] and kwargs['filters']['authorFlood'] < maxresults:
+            logger.debug("applying floodfilter")
+            recommendations, flood_timing = author_flood_filter(recommendations, work2meta, kwargs['filters']['authorFlood'])
+        return recommendations, work2pid, to_milli(datetime.datetime.now() - start)
 
     def __remove_ignores(self, workids, kwargs, recommendations):
         """ remove works from 'ignore' list (if any) and the pids in 'like' from recommendation list """
