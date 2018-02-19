@@ -98,3 +98,10 @@ class TestFilterCreator(unittest.TestCase):
         arguments = {'like': ['870970-basis:28634560'], 'filters': {'authorFlood': 2}}
         recommendations, timings = self.recommender(**arguments)
         self.assertEqual(expected, make_pid_set(recommendations))
+
+    def test_loanCount_booster(self):
+        arguments = {'like': ['870970-basis:28634560'], 'Booster': {'loanCount': 2}}
+        recommendations, timings = self.recommender(**arguments)
+        print("LC")
+        for recommendation in recommendations:
+            print(recommendation)
