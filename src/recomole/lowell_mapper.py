@@ -128,7 +128,8 @@ class LowellDBMapper():
 
         filters = self.__get_supported_filters(filters)
         if filters:
-            stmt += sql.SQL('\n') + sql.SQL('\n').join([sql.SQL(" AND met.metadata ->> ") + f for f in self.__filter_creator(filters)])
+            stmt += (sql.SQL('\n') +
+                     sql.SQL('\n').join([sql.SQL(" AND met.metadata ->> ") + f for f in self.__filter_creator(filters)]))
         stmt += sql.SQL("""\n ORDER BY rel.workid, pl.loancount DESC;""")
 
         map_ = {}
@@ -140,7 +141,7 @@ class LowellDBMapper():
 
     def __get_supported_filters(self, filters):
         if filters:
-            return [f for f in filters if f.key() in self.supported_filters]
+            return {k: v for k, v in filters.items() if k in self.supported_filters}
         return []
 
     def __filter_creator(self, request):
