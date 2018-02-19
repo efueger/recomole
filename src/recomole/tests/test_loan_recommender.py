@@ -100,14 +100,9 @@ class TestFilterCreator(unittest.TestCase):
         self.assertEqual(expected, make_pid_set(recommendations))
 
     def test_loanCount_booster(self):
-        arguments = {'like': ['870970-basis:28634560'], 'boosters': {'loanCount': 2}, 'rows': 2}
-        recommendations, timings = self.recommender(**arguments)
-        print("LC")
-        for recommendation in recommendations:
-            print(recommendation)
-
         arguments = {'like': ['870970-basis:28634560'], 'boosters': {'loanCount': 8}, 'rows': 2}
         recommendations, timings = self.recommender(**arguments)
-        print("LC")
-        for recommendation in recommendations:
-            print(recommendation)
+        ### Boost change the order of returned pids
+        expected = ['870970-basis:29705119', '870970-basis:27925715']
+        actual = [r['pid'] for r in recommendations]
+        self.assertEqual(expected, actual)
