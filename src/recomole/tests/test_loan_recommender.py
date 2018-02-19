@@ -109,10 +109,7 @@ class TestFilterCreator(unittest.TestCase):
 
     def test_subject_filter(self):
         arguments = {'like': ['300157-katalog:111417105',
-                              '810015-katalog:008574122',
-                              '870970-basis:29949239',
-                              '874310-katalog:DBB0039506',
-                              '875710-katalog:104864236']}
+                              '810015-katalog:008574122']}
         recommendations, timings = self.recommender(**arguments)
         print("RECCER")
         for r in recommendations:
