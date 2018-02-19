@@ -19,6 +19,10 @@ from collections import defaultdict
 logger = logging.getLogger(__name__)
 
 
+class FilterError(Exception):
+    pass
+
+
 def die(mesg, exception=RuntimeError):
     logger.error(mesg)
     raise exception(mesg)
@@ -94,69 +98,103 @@ class LowellDBMapper():
                         works[row['workid']][type_] = row[type_]
             return works
 
-    def work2pid_loancount(self, workids):
+    # def work2pid_loancount(self, workids):
+    #     """
+    #     Returns the one pid with the highest loancount for each provided workid
+
+    #     :param workids:
+    #         List of workids
+    #     """
+    #     map_ = {}
+    #     with Cursor(self.lowell_db) as cur:
+    #         cur.execute("""SELECT DISTINCT ON (relations.workid) relations.pid, relations.workid, pid_loancount.loancount
+    #                        FROM pid_loancount
+    #                        INNER JOIN relations ON pid_loancount.pid = relations.pid
+    #                        WHERE relations.workid IN %(workids)s
+    #                        ORDER BY relations.workid, pid_loancount.loancount DESC""", {'workids': tuple(workids)})
+    #         for row in cur:
+    #             map_[row['workid']] = {'pid': row['pid'], 'loancount': row['loancount']}
+    #     return map_
+
+    # def __check_pids_are_in_works(self, pids, works):
+    #     for pid in pids:
+    #         if pid not in works:
+    #             logger.warning("Could not find work for pid '%s'", pid)
+
+    def work2pid_loancount(self, workids, filters=None):
         """
-        Returns the one pid with the highest loancount for each provided workid
+        Creates a sql statement to find most loaned pid for each workid,
+        provided it passes all given filters.
 
         :param workids:
-            List of workids
+            list of workids
+        :param filters:
+            dictionary with filters to apply
+            example: {'matType': ['mat'], 'languages': ['dan', 'eng']}
         """
-        map_ = {}
-        with Cursor(self.lowell_db) as cur:
-            cur.execute("""SELECT DISTINCT ON (relations.workid) relations.pid, relations.workid, pid_loancount.loancount
-                           FROM pid_loancount
-                           INNER JOIN relations ON pid_loancount.pid = relations.pid
-                           WHERE relations.workid IN %(workids)s
-                           ORDER BY relations.workid, pid_loancount.loancount DESC""", {'workids': tuple(workids)})
-            for row in cur:
-                map_[row['workid']] = {'pid': row['pid'], 'loancount': row['loancount']}
-        return map_
 
-    def __check_pids_are_in_works(self, pids, works):
-        for pid in pids:
-            if pid not in works:
-                logger.warning("Could not find work for pid '%s'", pid)
+        workids = sql.SQL(', ').join(sql.Literal(n) for n in workids)
 
+        stmt = sql.SQL(re.sub(" +", " ", """SELECT DISTINCT ON (rel.workid) rel.pid, rel.workid, pl.loancount
+                              FROM relations AS rel
+                              INNER JOIN pid_loancount as pl
+                              ON rel.pid = pl.pid
+                              INNER JOIN metadata as met
+                              ON rel.pid = met.pid
+                              WHERE rel.workid IN ({workids})""")).format(workids=workids)
 
-class FilterError(Exception):
-    pass
+        if filters:
+            stmt += sql.SQL('\n') + sql.SQL('\n').join([sql.SQL(" AND met.metadata ->> ") + f for f in self.__filter_creator(filters)])
+        stmt += sql.SQL("""\n ORDER BY rel.workid, pl.loancount DESC;""")
+        return stmt
 
+    def __filter_creator(self, request):
+        """ Creates SQL filter statements from filter request dictionary"""
+        def __map_filter(key, value):
+            if key in ['subject', 'matType', 'languages']:
+                return sql.SQL("{type} IN ({value})").format(type=sql.Literal(key),
+                                                             value=sql.SQL(', ').join([sql.Literal(v) for v in value]))
+            else:
+                die("Unknown filter '%s'" % key, FilterError)
 
-def filter_creator(request):
-    """ Creates SQL filter statements from filter request dictionary"""
-    def __map_filter(key, value):
-        if key in ['subject', 'matType', 'languages']:
-            return sql.SQL("{type} IN ({value})").format(type=sql.Literal(key),
-                                                         value=sql.SQL(', ').join([sql.Literal(v) for v in value]))
-        else:
-            die("Unknown filter '%s'" % key, FilterError)
-
-    return [__map_filter(k, v) for k, v in request.items()]
+        return [__map_filter(k, v) for k, v in request.items()]
 
 
-def create_filter_sql(workids, filters=None):
-    """
-    Creates a sql statement to find most loaned pid for each workid,
-    provided it passes all given filters.
+# def filter_creator(request):
+#     """ Creates SQL filter statements from filter request dictionary"""
+#     def __map_filter(key, value):
+#         if key in ['subject', 'matType', 'languages']:
+#             return sql.SQL("{type} IN ({value})").format(type=sql.Literal(key),
+#                                                          value=sql.SQL(', ').join([sql.Literal(v) for v in value]))
+#         else:
+#             die("Unknown filter '%s'" % key, FilterError)
 
-    :param workids:
-        list of workids
-    :param filters:
-        dictionary with filters to apply
-        example: {'matType': ['mat'], 'languages': ['dan', 'eng']}
-    """
+#     return [__map_filter(k, v) for k, v in request.items()]
 
-    workids = sql.SQL(', ').join(sql.Literal(n) for n in workids)
 
-    stmt = sql.SQL(re.sub(" +", " ", """SELECT DISTINCT ON (rel.workid) rel.pid, rel.workid, pl.loancount
-                          FROM relations AS rel
-                          INNER JOIN pid_loancount as pl
-                          ON rel.pid = pl.pid
-                          INNER JOIN metadata as met
-                          ON rel.pid = met.pid
-                          WHERE rel.workid IN ({workids})""")).format(workids=workids)
+# def create_filter_sql(workids, filters=None):
+#     """
+#     Creates a sql statement to find most loaned pid for each workid,
+#     provided it passes all given filters.
 
-    if filters:
-        stmt += sql.SQL('\n') + sql.SQL('\n').join([sql.SQL(" AND met.metadata ->> ") + f for f in filter_creator(filters)])
-    stmt += sql.SQL("""\n ORDER BY rel.workid, pl.loancount DESC;""")
-    return stmt
+#     :param workids:
+#         list of workids
+#     :param filters:
+#         dictionary with filters to apply
+#         example: {'matType': ['mat'], 'languages': ['dan', 'eng']}
+#     """
+
+#     workids = sql.SQL(', ').join(sql.Literal(n) for n in workids)
+
+#     stmt = sql.SQL(re.sub(" +", " ", """SELECT DISTINCT ON (rel.workid) rel.pid, rel.workid, pl.loancount
+#                           FROM relations AS rel
+#                           INNER JOIN pid_loancount as pl
+#                           ON rel.pid = pl.pid
+#                           INNER JOIN metadata as met
+#                           ON rel.pid = met.pid
+#                           WHERE rel.workid IN ({workids})""")).format(workids=workids)
+
+#     if filters:
+#         stmt += sql.SQL('\n') + sql.SQL('\n').join([sql.SQL(" AND met.metadata ->> ") + f for f in filter_creator(filters)])
+#     stmt += sql.SQL("""\n ORDER BY rel.workid, pl.loancount DESC;""")
+#     return stmt
