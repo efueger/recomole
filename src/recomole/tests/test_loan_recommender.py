@@ -102,7 +102,18 @@ class TestFilterCreator(unittest.TestCase):
     def test_loanCount_booster(self):
         arguments = {'like': ['870970-basis:28634560'], 'boosters': {'loanCount': 8}, 'rows': 2}
         recommendations, timings = self.recommender(**arguments)
-        ### Boost change the order of returned pids
+        # Boost change the order of returned pids
         expected = ['870970-basis:29705119', '870970-basis:27925715']
         actual = [r['pid'] for r in recommendations]
         self.assertEqual(expected, actual)
+
+    def test_subject_filter(self):
+        arguments = {'like': ['300157-katalog:111417105',
+                              '810015-katalog:008574122',
+                              '870970-basis:29949239',
+                              '874310-katalog:DBB0039506',
+                              '875710-katalog:104864236']}
+        recommendations, timings = self.recommender(**arguments)
+        print("RECCER")
+        for r in recommendations:
+            print(r)
