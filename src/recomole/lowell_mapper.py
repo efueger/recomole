@@ -134,6 +134,7 @@ class LowellDBMapper():
 
         map_ = {}
         with Cursor(self.lowell_db) as cur:
+            print(stmt.as_string(cur))
             cur.execute(stmt)
             for row in cur:
                 map_[row['workid']] = {'pid': row['pid'], 'loancount': row['loancount']}
