@@ -25,6 +25,7 @@ example of usage:
 """
 import datetime
 import logging
+import math
 from collections import Counter, defaultdict, namedtuple
 from recomole.lowell_mapper import LowellDBMapper
 
@@ -61,6 +62,10 @@ class LoansSpecification():
         if 'filters' in request:
             allowed_filters = {'authorFlood': int, 'subject': list, 'matType': list, 'language': list}
             self.__validate(request['filters'], allowed_filters, 'filters')
+
+        if 'boosters' in request:
+            allowed_boosters = {'loanCount': int}
+            self.__validate(request['boosters'], allowed_boosters, 'boosters')
 
     def __validate(self, dictionary, allowed_keys, name):
         for key, value in dictionary.items():
@@ -107,6 +112,8 @@ class LoansRecommender():
         self.mapper = LowellDBMapper(self.lowell_db)
         self.reader = reader
 
+        self.boosters = {'loanCount': self.__loancount_booster}
+
     def __call__(self, **kwargs):
         return self.recommend(**kwargs)
 
@@ -128,6 +135,7 @@ class LoansRecommender():
         work2meta, timings['work2meta'] = self.__work2meta([r.work for r in recommendations])
         recommendations, timings['ignore'] = self.__remove_ignores(workids, kwargs, recommendations)
 
+        recommendations, timings['booster'] = self.__apply_boosters(recommendations, kwargs, work2meta)
         recommendations, work2pid, timings['filter'] = self.__apply_filters(recommendations, kwargs, work2meta, maxresults)
 
         recommendations, timings['augment'] = self.__augment(recommendations[kwargs['start']:maxresults], work2pid, work2meta, work2origin)
@@ -135,6 +143,23 @@ class LoansRecommender():
         timings['total'] = to_milli(datetime.datetime.now() - start)
         logger.debug("Returning result %s, %s", recommendations, {'timings': timings})
         return self.rename_keys(recommendations, {'title': 'debug-title', 'creator': 'debug-creator'}), {'timings': timings}
+
+    def __apply_boosters(self, recommendations, kwargs, work2meta):
+        logger.debug("applying boosters")
+        start = datetime.datetime.now()
+        if 'boosters' in kwargs:
+            for booster in kwargs['boosters']:
+                recommendations = self.boosters[booster](recommendations, kwargs['boosters'][booster])
+
+        return recommendations, to_milli(datetime.datetime.now() - start)
+
+    def __loancount_booster(self, recommendations, factor):
+        logger.debug("Applying loancount booster (factor=%d)", factor)
+        print("Applying loancount booster (factor=%d)" % factor)
+        loancounts, _ = self.__works2loancounts([r.work for r in recommendations])
+        recommendations = [Recommendation(r.work, r.value + (math.log(math.log(loancounts.get(r.work, 1)))) * factor) for r in recommendations]
+        recommendations = sorted(recommendations, reverse=True, key=lambda r: r.value)
+        return recommendations
 
     def __apply_filters(self, recommendations, kwargs, work2meta, maxresults):
         """ Filter works and choose pid from work based on filters and loancount """
@@ -170,6 +195,12 @@ class LoansRecommender():
         start = datetime.datetime.now()
         workids = self.mapper.pids2works(likes)
         return workids, to_milli(datetime.datetime.now() - start)
+
+    def __works2loancounts(self, works):
+        """ fetch loancount for works """
+        start = datetime.datetime.now()
+        work2loancount = self.mapper.works2loancounts(works)
+        return work2loancount, to_milli(datetime.datetime.now() - start)
 
     def __work2meta(self, works):
         """ fetch metadata for works """

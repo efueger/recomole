@@ -29,7 +29,19 @@ Supported filters:
 * **language**: List of languages. Only materials with one of these subjects are returned
 
 ### Boosters
-Boost recommendations and change the ranking of resultset (not implemented yet).
+Boosters cahnge the result and rank of the returned recommendations.
+
+Each booster takes a factor argument, which determines how much the
+booster should impact the result.
+
+The boost value and factors are applied as a linear combination on
+the result:
+
+    base_value + bosster_1 * factor_1 + booster_2 * factor_2 ...
+
+Supported boosters:
+
+* **loanCount**: Boost on number of loans for each recommendations
 
 ### examples
 

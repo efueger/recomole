@@ -41,14 +41,14 @@ class TestLoanSpecification(unittest.TestCase):
         with self.assertRaises(SpecificationError):
             self.spec.validate({'like': ['foo', 'bar'], 'filters': {'authorFlood': []}})
 
-    # def test_known_booster_validates(self):
-    #     self.spec.validate({'like': ['foo', 'bar'], 'boosters': {'authorFlood': 2}})
+    def test_known_booster_validates(self):
+        self.spec.validate({'like': ['foo', 'bar'], 'boosters': {'loanCount': 2}})
 
-    # def test_unknown_booster_raises(self):
-    #     with self.assertRaises(SpecificationError):
-    #         self.spec.validate({'like': ['foo', 'bar'], 'boosters': {'unknownBooster': 2}})
+    def test_unknown_booster_raises(self):
+        with self.assertRaises(SpecificationError):
+            self.spec.validate({'like': ['foo', 'bar'], 'boosters': {'unknownBooster': 2}})
 
-    # def test_booster_raises_unknown_arg_type(self):
-    #     with self.assertRaises(SpecificationError):
-    #         self.spec.validate({'like': ['foo', 'bar'], 'boosters': {'authorFlood': []}})
+    def test_booster_raises_unknown_arg_type(self):
+        with self.assertRaises(SpecificationError):
+            self.spec.validate({'like': ['foo', 'bar'], 'boosters': {'loanCount': []}})
 

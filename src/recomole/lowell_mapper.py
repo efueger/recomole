@@ -62,6 +62,20 @@ class LowellDBMapper():
         self.__check_pids_are_in_works(pids, works)
         return works
 
+    def works2loancounts(self, workids):
+        """
+        return loancount for specified workids
+
+        :param workids:
+            List of workids
+        """
+        loancounts = {}
+        with Cursor(self.lowell_db) as cur:
+            cur.execute("SELECT workid,loancount FROM workid_loancount WHERE workid in %(workids)s", {'workids': tuple(workids)})
+            for row in cur:
+                loancounts[row['workid']] = row['loancount']
+        return loancounts
+
     def works2meta(self, workids):
         """
         Returns metadata for provided workids
