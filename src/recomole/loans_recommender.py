@@ -131,6 +131,8 @@ class LoansRecommender():
 
         num_cand = maxresults * 5
         recommendations, work2origin, timings['fetch'], timings['from-analysis'] = self.__fetch(workids, pid2work, num_cand)
+        if not recommendations:
+            return [], {'timings': timings}
 
         work2meta, timings['work2meta'] = self.__work2meta([r.work for r in recommendations])
         recommendations, timings['ignore'] = self.__remove_ignores(workids, kwargs, recommendations)
