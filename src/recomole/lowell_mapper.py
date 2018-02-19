@@ -49,6 +49,7 @@ class LowellDBMapper():
     """
     def __init__(self, lowell_db):
         self.lowell_db = lowell_db
+        self.supported_filters = ['subject', 'matType', 'languages']
 
     def pids2works(self, pids):
         """
@@ -125,6 +126,7 @@ class LowellDBMapper():
                               ON rel.pid = met.pid
                               WHERE rel.workid IN ({workids})""")).format(workids=workids)
 
+        filters = self.__get_supported_filters(filters)
         if filters:
             stmt += sql.SQL('\n') + sql.SQL('\n').join([sql.SQL(" AND met.metadata ->> ") + f for f in self.__filter_creator(filters)])
         stmt += sql.SQL("""\n ORDER BY rel.workid, pl.loancount DESC;""")
@@ -136,10 +138,15 @@ class LowellDBMapper():
                 map_[row['workid']] = {'pid': row['pid'], 'loancount': row['loancount']}
         return map_
 
+    def __get_supported_filters(self, filters):
+        if filters:
+            return [f for f in filters if f.key() in self.supported_filters]
+        return []
+
     def __filter_creator(self, request):
         """ Creates SQL filter statements from filter request dictionary"""
         def __map_filter(key, value):
-            if key in ['subject', 'matType', 'languages']:
+            if key in self.supported_filters:
                 return sql.SQL("{type} IN ({value})").format(type=sql.Literal(key),
                                                              value=sql.SQL(', ').join([sql.Literal(v) for v in value]))
             else:
