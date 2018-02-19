@@ -21,6 +21,7 @@ Test dumps er konstrueret på følgende måde
     INSERT INTO pid_loancount_test SELECT * FROM pid_loancount WHERE pid IN (pid liste...);
     INSERT INTO relations_test SELECT * FROM relations WHERE pid IN (pid liste...);
     INSERT INTO workid_meta_test SELECT * FROM workid_meta WHERE workid IN (SELECT workid FROM relations WHERE pid IN (pid liste...));
+    INSERT INTO workid_loancount_test SELECT * FROM workid_loancount WHERE workid IN (SELECT workid FROM relations WHERE pid IN (pid liste...));
 
 3. opret cosim_model_test (RECMOD), og lav byg test model (via script i mobus pakke)
     build-loan-model-postgres --test
@@ -29,6 +30,7 @@ Test dumps er konstrueret på følgende måde
 4. dump tabeller:
     pg_dump -t relations_test $LOWELL_URL > relations.sql
     pg_dump -t workid_meta_test $LOWELL_URL > workid_meta.sql
+    pg_dump -t workid_loancount_test $LOWELL_URL > workid_loancount.sql
     pg_dump -t metadata_test $LOWELL_URL > metadata.sql
     pg_dump -t pid_loancount_test $LOWELL_URL > pid_loancount.sql
     pg_dump -t cosim_model_test $RECMOD_URL > cosim_model.sql
