@@ -146,7 +146,13 @@ class LowellDBMapper():
         if filters:
             stmt += sql.SQL('\n') + sql.SQL('\n').join([sql.SQL(" AND met.metadata ->> ") + f for f in self.__filter_creator(filters)])
         stmt += sql.SQL("""\n ORDER BY rel.workid, pl.loancount DESC;""")
-        return stmt
+
+        map_ = {}
+        with Cursor(self.lowell_db) as cur:
+            cur.execute(stmt)
+            for row in cur:
+                map_[row['workid']] = {'pid': row['pid'], 'loancount': row['loancount']}
+        return map_
 
     def __filter_creator(self, request):
         """ Creates SQL filter statements from filter request dictionary"""
