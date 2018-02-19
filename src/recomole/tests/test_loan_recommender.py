@@ -108,9 +108,12 @@ class TestFilterCreator(unittest.TestCase):
         self.assertEqual(expected, actual)
 
     def test_subject_filter(self):
-        arguments = {'like': ['300157-katalog:111417105',
-                              '810015-katalog:008574122']}
+        arguments = {'like': ['870970-basis:52770831']}
         recommendations, timings = self.recommender(**arguments)
         print("RECCER")
         for r in recommendations:
             print(r)
+
+# 870970-basis:52770831       |     7625 | 2016-12-13 14:14:03.411 | {"dk5": ["64.11"], "date": ["2016"], "type": ["Bog"], "title": ["Food from the fire"], "creator": ["Niklas Ekstedt"], "subject": ["bål", "Outdoor cooking", "kogebøger", "bålmad", "Cooking, Scandinavian", "madlavning", "Madlavning i alm. for særligt apparatur", "Food and Drink", "opskrifter"], "language": ["eng"], "contributor": ["Liz Haarala Hamilton", "Max Haarala Hamilton"], "subject_dbc": ["bål", "madlavning", "kogebøger", "opskrifter", "bålmad"], "subject_dbc_f": ["bål", "madlavning", "bålmad"], "subject_dbc_o": ["kogebøger", "opskrifter"]}                            | f
+#  870970-basis:52932319       |  6394635 | 2017-03-15 16:25:16.211 | {"dk5": ["78.7941"], "date": ["2016"], "type": ["Node"], "title": ["Just sing it!"], "subject": ["Danmark", "vokal", "2010-2019", "kor", "Antologier af rock og moderne folkemusik", "rock", "pop", "rytmisk kor"], "language": ["dan"], "contributor": ["Line Groth"], "subject_dbc": ["vokal", "kor", "rock", "pop", "rytmisk kor"], "subject_spat": ["Danmark"], "subject_temp": ["2010-2019"], "subject_dbc_m": ["vokal", "kor", "rock", "pop", "rytmisk kor"]}                                                                                                                               | f
+#  870970-basis:52932858
