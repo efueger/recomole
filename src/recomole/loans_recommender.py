@@ -155,6 +155,7 @@ class LoansRecommender():
 
     def __loancount_booster(self, recommendations, factor):
         logger.debug("Applying loancount booster (factor=%d)", factor)
+        print("Applying loancount booster (factor=%d)" % factor)
         loancounts, _ = self.__works2loancounts([r.work for r in recommendations])
         recommendations = [Recommendation(r.work, r.value + (math.log(math.log(loancounts.get(r.work, 1)))) * factor) for r in recommendations]
         recommendations = sorted(recommendations, reverse=True, key=lambda r: r.value)
