@@ -114,10 +114,17 @@ class TestFilterCreator(unittest.TestCase):
         actual = [r['pid'] for r in recommendations]
         self.assertEqual(expected, actual)
 
-    def test_subject_filter(self):
-        arguments = {'like': ['870970-basis:28634560'], 'filters': {'authorFlood': 2}}
+    def test_subject_filter_1_subject(self):
+        arguments = {'like': ['870970-basis:28634560'], 'filters': {'authorFlood': 2, 'subject': ['Danmark']}}
         recommendations, timings = self.recommender(**arguments)
-        print("SUBJECT")
+        print("SUBJECT1")
+        for r in recommendations:
+            print(r)
+
+    def test_subject_filter_2_subjects(self):
+        arguments = {'like': ['870970-basis:28634560'], 'filters': {'authorFlood': 2, 'subject': ['Danmark', 'fantasy']}}
+        recommendations, timings = self.recommender(**arguments)
+        print("SUBJECT2")
         for r in recommendations:
             print(r)
 
