@@ -116,10 +116,10 @@ class LowellDBMapper():
     #             map_[row['workid']] = {'pid': row['pid'], 'loancount': row['loancount']}
     #     return map_
 
-    # def __check_pids_are_in_works(self, pids, works):
-    #     for pid in pids:
-    #         if pid not in works:
-    #             logger.warning("Could not find work for pid '%s'", pid)
+    def __check_pids_are_in_works(self, pids, works):
+        for pid in pids:
+            if pid not in works:
+                logger.warning("Could not find work for pid '%s'", pid)
 
     def work2pid_loancount(self, workids, filters=None):
         """
