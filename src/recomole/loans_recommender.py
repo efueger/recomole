@@ -60,7 +60,7 @@ class LoansSpecification():
                 die("mandatory key '%s' is missing" % key, SpecificationError)
 
         if 'filters' in request:
-            allowed_filters = {'authorFlood': int, 'subject': list, 'type': list, 'language': list}
+            allowed_filters = {'authorFlood': int, 'subject': list, 'type': list, 'language': list, 'dk5': list}
             self.__validate(request['filters'], allowed_filters, 'filters')
 
         if 'boosters' in request:

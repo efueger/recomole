@@ -49,7 +49,7 @@ class LowellDBMapper():
     """
     def __init__(self, lowell_db):
         self.lowell_db = lowell_db
-        self.supported_filters = ['subject', 'type', 'language']
+        self.supported_filters = ['subject', 'type', 'language', 'dk5']
 
     def pids2works(self, pids):
         """
