@@ -131,6 +131,8 @@ class LoansRecommender():
 
         num_cand = maxresults * 5
         recommendations, work2origin, timings['fetch'], timings['from-analysis'] = self.__fetch(workids, pid2work, num_cand)
+        if not recommendations:
+            return [], {'timings': timings}
 
         work2meta, timings['work2meta'] = self.__work2meta([r.work for r in recommendations])
         recommendations, timings['ignore'] = self.__remove_ignores(workids, kwargs, recommendations)
@@ -155,7 +157,6 @@ class LoansRecommender():
 
     def __loancount_booster(self, recommendations, factor):
         logger.debug("Applying loancount booster (factor=%d)", factor)
-        print("Applying loancount booster (factor=%d)" % factor)
         loancounts, _ = self.__works2loancounts([r.work for r in recommendations])
         recommendations = [Recommendation(r.work, r.value + (math.log(math.log(loancounts.get(r.work, 1)))) * factor) for r in recommendations]
         recommendations = sorted(recommendations, reverse=True, key=lambda r: r.value)
@@ -165,7 +166,7 @@ class LoansRecommender():
         """ Filter works and choose pid from work based on filters and loancount """
         logger.debug("applying filters")
         start = datetime.datetime.now()
-        work2pid, _ = self.__work2pid([r.work for r in recommendations])
+        work2pid, _ = self.__work2pid([r.work for r in recommendations], kwargs.get('filters', []))
         if 'filters' in kwargs and 'authorFlood' in kwargs['filters'] and kwargs['filters']['authorFlood'] < maxresults:
             logger.debug("applying floodfilter")
             recommendations, flood_timing = author_flood_filter(recommendations, work2meta, kwargs['filters']['authorFlood'])
@@ -208,9 +209,9 @@ class LoansRecommender():
         work2meta = self.mapper.works2meta(works)
         return work2meta, to_milli(datetime.datetime.now() - start)
 
-    def __work2pid(self, works):
+    def __work2pid(self, works, filters=None):
         start = datetime.datetime.now()
-        work2pid = self.mapper.work2pid_loancount(works)
+        work2pid = self.mapper.work2pid_loancount(works, filters)
         return work2pid, to_milli(datetime.datetime.now() - start)
 
     def rename_keys(self, recommendations, keys):
