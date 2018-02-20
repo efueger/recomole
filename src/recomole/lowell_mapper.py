@@ -49,7 +49,7 @@ class LowellDBMapper():
     """
     def __init__(self, lowell_db):
         self.lowell_db = lowell_db
-        self.supported_filters = ['subject', 'matType', 'languages']
+        self.supported_filters = ['subject', 'matType', 'language']
 
     def pids2works(self, pids):
         """
@@ -113,7 +113,7 @@ class LowellDBMapper():
             list of workids
         :param filters:
             dictionary with filters to apply
-            example: {'matType': ['mat'], 'languages': ['dan', 'eng']}
+            example: {'matType': ['mat'], 'language': ['dan', 'eng']}
         """
 
         workids = sql.SQL(', ').join(sql.Literal(n) for n in workids)
@@ -134,6 +134,7 @@ class LowellDBMapper():
 
         map_ = {}
         with Cursor(self.lowell_db) as cur:
+            print(stmt.as_string(cur))
             cur.execute(stmt)
             for row in cur:
                 map_[row['workid']] = {'pid': row['pid'], 'loancount': row['loancount']}
