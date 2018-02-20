@@ -149,7 +149,7 @@ class LowellDBMapper():
         """ Creates SQL filter statements from filter request dictionary"""
         def __map_filter(key, value):
             if key in self.supported_filters:
-                return sql.SQL("{type} ?| array({value})").format(type=sql.Literal(key),
+                return sql.SQL("{type} ?| array[{value}]").format(type=sql.Literal(key),
                                                              value=sql.SQL(', ').join([sql.Literal(v) for v in value]))
             else:
                 die("Unknown filter '%s'" % key, FilterError)
