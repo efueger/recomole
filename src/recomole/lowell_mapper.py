@@ -125,7 +125,9 @@ class LowellDBMapper():
                               ON rel.pid = met.pid
                               WHERE rel.workid IN ({workids})""")).format(workids=workids)
 
-        filters = self.__get_supported_filters(filters)
+        filters, year = self.__get_supported_filters(filters)
+        if year:
+            stmt += sql.SQL('\n AND met.metadata ->> date >= {year}').format(year=year)
         if filters:
             stmt += (sql.SQL('\n') +
                      sql.SQL('\n').join([sql.SQL(" AND met.metadata -> ") + f for f in self.__filter_creator(filters)]))
@@ -140,7 +142,7 @@ class LowellDBMapper():
 
     def __get_supported_filters(self, filters):
         if filters:
-            return {k: v for k, v in filters.items() if k in self.supported_filters}
+            return {k: v for k, v in filters.items() if k in self.supported_filters}, filters.get('year', None)
         return []
 
     def __filter_creator(self, request):
