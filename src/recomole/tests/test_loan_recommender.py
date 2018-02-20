@@ -44,9 +44,7 @@ class TestFilterCreator(unittest.TestCase):
     def test_no_recomendations_found(self):
         arguments = {'like': ['870970-basis:52770831']}
         recommendations, timings = self.recommender(**arguments)
-        print("RECCER")
-        for r in recommendations:
-            print(r)
+        self.assertEqual([], recommendations)
 
     def test_ignores_unknown_pid_among_known_pids(self):
         expected = {'870970-basis:27925715',
