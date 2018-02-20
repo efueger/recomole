@@ -134,7 +134,7 @@ class LowellDBMapper():
 
         map_ = {}
         with Cursor(self.lowell_db) as cur:
-            print(stmt.as_string(cur))
+            # print(stmt.as_string(cur))
             cur.execute(stmt)
             for row in cur:
                 map_[row['workid']] = {'pid': row['pid'], 'loancount': row['loancount']}
@@ -149,8 +149,8 @@ class LowellDBMapper():
         """ Creates SQL filter statements from filter request dictionary"""
         def __map_filter(key, value):
             if key in self.supported_filters:
-                return sql.SQL("{type} ?| array[{value}]").format(type=sql.Literal(key),
-                                                             value=sql.SQL(', ').join([sql.Literal(v) for v in value]))
+                return sql.SQL("{type}::jsonb ?| array[{value}]").format(type=sql.Literal(key),
+                                                                  value=sql.SQL(', ').join([sql.Literal(v) for v in value]))
             else:
                 die("Unknown filter '%s'" % key, FilterError)
 
