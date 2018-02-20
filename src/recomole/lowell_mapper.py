@@ -129,7 +129,7 @@ class LowellDBMapper():
         filters = self.__get_supported_filters(filters)
         if filters:
             stmt += (sql.SQL('\n') +
-                     sql.SQL('\n').join([sql.SQL(" AND array(met.metadata ->> ") + f for f in self.__filter_creator(filters)]))
+                     sql.SQL('\n').join([sql.SQL(" AND met.metadata -> ") + f for f in self.__filter_creator(filters)]))
         stmt += sql.SQL("""\n ORDER BY rel.workid, pl.loancount DESC;""")
 
         map_ = {}
@@ -149,7 +149,7 @@ class LowellDBMapper():
         """ Creates SQL filter statements from filter request dictionary"""
         def __map_filter(key, value):
             if key in self.supported_filters:
-                return sql.SQL("{type})::jsonb ?| array[{value}]").format(type=sql.Literal(key),
+                return sql.SQL("{type} ?| array[{value}]").format(type=sql.Literal(key),
                                                                           value=sql.SQL(', ').join([sql.Literal(v) for v in value]))
             else:
                 die("Unknown filter '%s'" % key, FilterError)
