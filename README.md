@@ -25,7 +25,7 @@ Supported filters:
 
 * **authorFlood**: The maximum number of recommendations from a single author in the result
 * **subject**: List of subjects. Only materials with one of these subjects are returned
-* **matType**: List of material types. Only materials with one of these subjects are returned
+* **type**: List of material types. Only materials with one of these subjects are returned
 * **language**: List of languages. Only materials with one of these subjects are returned
 
 ### Boosters
