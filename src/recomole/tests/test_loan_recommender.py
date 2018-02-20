@@ -146,9 +146,13 @@ class TestFilterCreator(unittest.TestCase):
     def test_material_type_filter_1_material_type(self):
         arguments = {'like': ['870970-basis:28634560'], 'filters': {'authorFlood': 2, 'type': ['Dvd']}}
         recommendations, timings = self.recommender(**arguments)
-        print("REC1", [r['pid'] for r in recommendations])
+        expected = ['870970-basis:23481561']
+        actual = [r['pid'] for r in recommendations]
+        self.assertEqual(expected, actual)
 
     def test_material_type_filter_2_material_type(self):
         arguments = {'like': ['870970-basis:28634560'], 'filters': {'authorFlood': 2, 'type': ['Dvd', 'Bog']}}
         recommendations, timings = self.recommender(**arguments)
-        print("REC2", [r['pid'] for r in recommendations])
+        expected = ['870970-basis:27925715', '870970-basis:29705119', '870970-basis:29401691', '870970-basis:23481561']
+        actual = [r['pid'] for r in recommendations]
+        self.assertEqual(expected, actual)
