@@ -143,7 +143,7 @@ class LowellDBMapper():
     def __get_supported_filters(self, filters):
         if filters:
             return {k: v for k, v in filters.items() if k in self.supported_filters}, filters.get('year', None)
-        return []
+        return [], []
 
     def __filter_creator(self, request):
         """ Creates SQL filter statements from filter request dictionary"""
