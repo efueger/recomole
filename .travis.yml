@@ -44,5 +44,5 @@ script:
   - python setup.py egg_info --tag-build=".${TRAVIS_BUILD_NUMBER}" bdist_wheel
 
 after_success:
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+  - ./cc-test-reporter after-build --debug --exit-code $TRAVIS_TEST_RESULT
   
